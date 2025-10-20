@@ -106,7 +106,7 @@ export default function RestPeriodCompliancePage() {
     {
       id: "2",
       employeeId: "EMP002",
-      employeeName: "Employee BB",
+      employeeName: "Employee AB",
       shiftDate: "2025-01-15",
       shiftType: "Night Shift",
       previousShiftEnd: "2025-01-14 22:00",
@@ -121,7 +121,7 @@ export default function RestPeriodCompliancePage() {
     {
       id: "3",
       employeeId: "EMP003",
-      employeeName: "Employee CC",
+      employeeName: "Employee AC",
       shiftDate: "2025-01-15",
       shiftType: "Late Shift",
       previousShiftEnd: "2025-01-14 22:00",
@@ -134,7 +134,7 @@ export default function RestPeriodCompliancePage() {
     {
       id: "4",
       employeeId: "EMP004",
-      employeeName: "Employee DD",
+      employeeName: "Employee AD",
       shiftDate: "2025-01-15",
       shiftType: "Early Shift",
       previousShiftEnd: "2025-01-14 14:00",
@@ -149,7 +149,7 @@ export default function RestPeriodCompliancePage() {
     {
       id: "5",
       employeeId: "EMP002",
-      employeeName: "Employee BB",
+      employeeName: "Employee AB",
       shiftDate: "2025-01-16",
       shiftType: "Late Shift",
       previousShiftEnd: "2025-01-15 22:00",
@@ -207,7 +207,7 @@ export default function RestPeriodCompliancePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-gradient-to-r from-white via-blue-50 to-indigo-50 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -218,7 +218,7 @@ export default function RestPeriodCompliancePage() {
                   onClick={handleBack}
                   className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
                 <h1 className="text-3xl font-bold text-gray-900">Rest Period Compliance</h1>
@@ -387,7 +387,13 @@ export default function RestPeriodCompliancePage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-start gap-4">
                     <div className={`p-3 rounded-lg ${record.status === 'compliant' ? 'bg-green-100' : record.status === 'non-compliant' ? 'bg-red-100' : 'bg-yellow-100'}`}>
-                      {getStatusIcon(record.status)}
+                      {record.status === 'compliant' ? (
+                        <CheckCircle className="w-6 h-6 text-green-600" />
+                      ) : record.status === 'non-compliant' ? (
+                        <XCircle className="w-6 h-6 text-red-600" />
+                      ) : (
+                        <AlertTriangle className="w-6 h-6 text-yellow-600" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -422,8 +428,13 @@ export default function RestPeriodCompliancePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
-                        {record.restPeriodHours >= record.requiredHours ? '✓' : '✗'} {record.restPeriodHours}h
+                      <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                        {record.restPeriodHours >= record.requiredHours ? (
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-600" />
+                        )}
+                        <span>{record.restPeriodHours}h</span>
                       </div>
                       <div className="text-xs text-gray-500">Rest Period</div>
                     </div>
@@ -459,74 +470,116 @@ export default function RestPeriodCompliancePage() {
 
       {/* Details Modal */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className="w-[90vw] max-w-[800px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
+        <DialogContent className="w-[90vw] max-w-[800px] max-h-[90vh] overflow-y-auto bg-white border-2 border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-200 pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl font-semibold text-gray-900">
               {selectedRecord && getStatusIcon(selectedRecord.status)}
               Compliance Details - {selectedRecord?.employeeName}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-600 mt-2">
               Detailed information about rest period compliance for this employee
             </DialogDescription>
           </DialogHeader>
           
           {selectedRecord && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Employee Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div><span className="font-medium">Employee ID:</span> {selectedRecord.employeeId}</div>
-                    <div><span className="font-medium">Name:</span> {selectedRecord.employeeName}</div>
-                    <div><span className="font-medium">Shift Date:</span> {selectedRecord.shiftDate}</div>
-                    <div><span className="font-medium">Shift Type:</span> {selectedRecord.shiftType}</div>
+            <div className="space-y-6 p-6">
+              <div className="space-y-6">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 mb-4 text-lg">Employee Information</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Employee ID:</span>
+                      <span className="text-gray-900">{selectedRecord.employeeId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Name:</span>
+                      <span className="text-gray-900">{selectedRecord.employeeName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Shift Date:</span>
+                      <span className="text-gray-900">{selectedRecord.shiftDate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Shift Type:</span>
+                      <span className="text-gray-900">{selectedRecord.shiftType}</span>
+                    </div>
                   </div>
                 </div>
                 
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3">Rest Period Details</h4>
-                  <div className="space-y-2 text-sm">
-                    <div><span className="font-medium">Previous Shift End:</span> {selectedRecord.previousShiftEnd}</div>
-                    <div><span className="font-medium">Next Shift Start:</span> {selectedRecord.nextShiftStart}</div>
-                    <div><span className="font-medium">Actual Rest Period:</span> {selectedRecord.restPeriodHours} hours</div>
-                    <div><span className="font-medium">Required Rest Period:</span> {selectedRecord.requiredHours} hours</div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 mb-4 text-lg">Rest Period Details</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Previous Shift End:</span>
+                      <span className="text-gray-900">{selectedRecord.previousShiftEnd}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Next Shift Start:</span>
+                      <span className="text-gray-900">{selectedRecord.nextShiftStart}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Actual Rest Period:</span>
+                      <span className="text-gray-900">{selectedRecord.restPeriodHours} hours</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-gray-600">Required Rest Period:</span>
+                      <span className="text-gray-900">{selectedRecord.requiredHours} hours</span>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Compliance Status</h4>
-                <div className="flex items-center gap-3">
-                  <Badge className={getStatusColor(selectedRecord.status)}>
-                    {selectedRecord.status.charAt(0).toUpperCase() + selectedRecord.status.slice(1).replace('-', ' ')}
-                  </Badge>
-                  {selectedRecord.violationType && (
-                    <Badge variant="outline" className="text-red-700 border-red-300">
-                      {getViolationTypeText(selectedRecord.violationType)}
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 mb-4 text-lg">Compliance Status</h4>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-lg font-medium text-gray-900">
+                      {selectedRecord.restPeriodHours}h / {selectedRecord.requiredHours}h required
+                    </div>
+                    <Badge className={getStatusColor(selectedRecord.status)}>
+                      {selectedRecord.status.charAt(0).toUpperCase() + selectedRecord.status.slice(1).replace('-', ' ')}
                     </Badge>
+                  </div>
+                  
+                  <div className="text-sm text-gray-500">
+                    Last Checked: {selectedRecord.lastChecked}
+                  </div>
+                  
+                  {selectedRecord.violationType && (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-red-700 border-red-300">
+                        {getViolationTypeText(selectedRecord.violationType)}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  {selectedRecord.notes && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-700">
+                      <AlertCircle className="w-4 h-4 inline mr-1" />
+                      {selectedRecord.notes}
+                    </div>
                   )}
                 </div>
-                {selectedRecord.notes && (
-                  <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-700">
-                    <AlertCircle className="w-4 h-4 inline mr-1" />
-                    {selectedRecord.notes}
-                  </div>
-                )}
               </div>
               
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowDetailsModal(false)}>
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowDetailsModal(false)}
+                  className="px-6 py-2 text-gray-700 border-gray-300 hover:bg-gray-50"
+                >
                   Close
                 </Button>
                 {selectedRecord.status === 'non-compliant' && (
                   <Button 
-                    className="bg-red-600 hover:bg-red-700 text-white"
+                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
                     onClick={() => {
                       handleResolveViolation(selectedRecord.id)
                       setShowDetailsModal(false)
                     }}
                   >
-                    Resolve Violation
+                    Resolve
                   </Button>
                 )}
               </div>

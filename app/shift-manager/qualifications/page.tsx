@@ -244,12 +244,18 @@ export default function QualificationsPage() {
         return qual?.code
       }).filter(Boolean)
       
+      let assignedCount = 0
+      let skippedCount = 0
+      
       setEmployees(employees.map(emp => {
         if (selectedEmployees.includes(emp.id)) {
           const newQualifications = [...emp.qualifications]
           qualCodes.forEach(code => {
             if (code && !newQualifications.includes(code)) {
               newQualifications.push(code)
+              assignedCount++
+            } else if (code && newQualifications.includes(code)) {
+              skippedCount++
             }
           })
           return { ...emp, qualifications: newQualifications }
@@ -260,29 +266,59 @@ export default function QualificationsPage() {
       setSelectedEmployees([])
       setSelectedQualifications([])
       
-      alert(`Successfully assigned ${qualCodes.length} qualification(s) to ${selectedEmployees.length} employee(s)`)
+      // Enhanced feedback
+      const message = `✅ Successfully assigned ${assignedCount} qualification(s) to ${selectedEmployees.length} employee(s)${skippedCount > 0 ? `\n⚠️ ${skippedCount} qualification(s) were already assigned` : ''}`
+      console.log(message)
+      alert(message)
     }
   }
 
   const handleRemoveQualification = (employeeId: string, qualificationCode: string) => {
+    const employee = employees.find(emp => emp.id === employeeId)
+    const qualification = qualifications.find(qual => qual.code === qualificationCode)
+    
+    if (!employee || !qualification) return
+    
+    // Check if qualification exists
+    if (!employee.qualifications.includes(qualificationCode)) {
+      return
+    }
+    
     setEmployees(employees.map(emp => 
       emp.id === employeeId 
         ? { ...emp, qualifications: emp.qualifications.filter(q => q !== qualificationCode) }
         : emp
     ))
+    
+    // Show success feedback
+    const employeeName = employee.name
+    const qualificationName = qualification.name
+    console.log(`🗑️ Successfully removed ${qualificationCode} (${qualificationName}) from ${employeeName}`)
   }
 
   const handleQuickAssign = (employeeId: string, qualificationCode: string) => {
+    const employee = employees.find(emp => emp.id === employeeId)
+    const qualification = qualifications.find(qual => qual.code === qualificationCode)
+    
+    if (!employee || !qualification) return
+    
+    // Check if already assigned
+    if (employee.qualifications.includes(qualificationCode)) {
+      return
+    }
+    
     setEmployees(employees.map(emp => {
       if (emp.id === employeeId) {
-        const newQualifications = [...emp.qualifications]
-        if (!newQualifications.includes(qualificationCode)) {
-          newQualifications.push(qualificationCode)
-        }
+        const newQualifications = [...emp.qualifications, qualificationCode]
         return { ...emp, qualifications: newQualifications }
       }
       return emp
     }))
+    
+    // Show success feedback
+    const employeeName = employee.name
+    const qualificationName = qualification.name
+    console.log(`✅ Successfully assigned ${qualificationCode} (${qualificationName}) to ${employeeName}`)
   }
 
   // Get unique groups from employees
@@ -323,26 +359,39 @@ export default function QualificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      {/* Professional animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-40 left-1/2 w-60 h-60 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-6000"></div>
+      </div>
+      
+      <header className="glass-effect border-b border-white/30 shadow-modern-lg relative z-10">
+        <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={goBack} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={goBack} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Employee Qualifications</h1>
-                <p className="text-gray-600">Manage employee qualifications and certifications</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-4xl font-bold text-gray-900">Employee Qualifications</h1>
+                  <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                    Manager Portal
+                  </div>
+                </div>
+                <p className="text-gray-600 text-lg">Manage employee qualifications and certifications</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-blue-600 font-medium">Shift Manager</div>
+                <div className="text-blue-600 font-bold text-lg">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>
@@ -353,222 +402,179 @@ export default function QualificationsPage() {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Group Filter */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Filter by Group</h3>
-              <p className="text-sm text-gray-600">Switch between different employee groups to view their qualifications</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="w-5 h-5 text-blue-600" />
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+          <div className="px-8 py-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Filter by Group</h3>
+                <p className="text-gray-600 text-lg">Switch between different employee groups to view their qualifications</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setSelectedGroup("all")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out ${
-                selectedGroup === "all"
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
-              }`}
-            >
-              All Groups ({employees.length})
-            </button>
-            {availableGroups.map((group) => (
+            
+            <div className="flex flex-wrap gap-4">
               <button
-                key={group}
-                onClick={() => setSelectedGroup(group)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out ${
-                  selectedGroup === group
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+                onClick={() => setSelectedGroup("all")}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ease-out shadow-lg hover:shadow-xl ${
+                  selectedGroup === "all"
+                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl transform scale-105"
+                    : "bg-white/80 text-gray-700 hover:bg-white hover:shadow-lg border border-white/30"
                 }`}
+                style={{borderRadius: '9999px'}}
               >
-                Group {group} ({groupStats[group]?.total || 0})
+                All Groups ({employees.length})
               </button>
-            ))}
-          </div>
-          
-          {/* Group Statistics */}
-          {selectedGroup !== "all" && groupStats[selectedGroup] && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{groupStats[selectedGroup].total}</div>
-                  <div className="text-blue-700">Total Employees</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{groupStats[selectedGroup].active}</div>
-                  <div className="text-green-700">Active</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">{groupStats[selectedGroup].withQualifications}</div>
-                  <div className="text-purple-700">With Qualifications</div>
+              {availableGroups.map((group) => (
+                <button
+                  key={group}
+                  onClick={() => setSelectedGroup(group)}
+                  className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ease-out shadow-lg hover:shadow-xl ${
+                    selectedGroup === group
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl transform scale-105"
+                      : "bg-white/80 text-gray-700 hover:bg-white hover:shadow-lg border border-white/30"
+                  }`}
+                  style={{borderRadius: '9999px'}}
+                >
+                  Group {group} ({groupStats[group]?.total || 0})
+                </button>
+              ))}
+            </div>
+            
+            {/* Group Statistics */}
+            {selectedGroup !== "all" && groupStats[selectedGroup] && (
+              <div className="mt-6 glass-effect rounded-2xl border-white/30 p-6 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600 mb-1">{groupStats[selectedGroup].total}</div>
+                    <div className="text-blue-700 font-semibold">Total Employees</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 mb-1">{groupStats[selectedGroup].active}</div>
+                    <div className="text-green-700 font-semibold">Active</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600 mb-1">{groupStats[selectedGroup].withQualifications}</div>
+                    <div className="text-purple-700 font-semibold">With Qualifications</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Bulk Assignment */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Bulk Qualification Assignment</h3>
-              <p className="text-gray-600">Select employees and qualifications to assign multiple qualifications at once</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <UserCheck className="w-5 h-5 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="search" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Search Employees
-              </Label>
-              <Input
-                id="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, ID, or email..."
-                className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <Award className="w-4 h-4" />
-                Select Qualifications
-              </Label>
-              <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
-                {qualifications.map((qual) => (
-                  <label key={qual.id} className="flex items-center space-x-2 cursor-pointer">
-                    <Checkbox
-                      checked={selectedQualifications.includes(qual.id)}
-                      onCheckedChange={() => handleQualificationSelection(qual.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <div>
-                      <span className="text-sm font-medium text-gray-900">{qual.code}</span>
-                      <span className="text-xs text-gray-600 ml-2">- {qual.name}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex flex-col justify-end h-full">
-              <div className="h-6"></div>
-              <Button 
-                onClick={handleAssignQualifications}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                disabled={selectedEmployees.length === 0 || selectedQualifications.length === 0}
-              >
-                <UserCheck className="w-5 h-5 mr-2" />
-                Assign ({selectedEmployees.length} employees)
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Employee List */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Employee Qualifications
-                {selectedGroup !== "all" && (
-                  <span className="text-lg font-normal text-blue-600 ml-2">
-                    - Group {selectedGroup}
-                  </span>
-                )}
-              </h3>
-              <p className="text-gray-600">
-                {selectedGroup === "all" 
-                  ? "View and manage individual employee qualifications across all groups"
-                  : `View and manage qualifications for employees in Group ${selectedGroup}`
-                }
-              </p>
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+          <div className="px-8 py-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Employee Qualifications
+                  {selectedGroup !== "all" && (
+                    <span className="text-xl font-normal text-blue-600 ml-3">
+                      - Group {selectedGroup}
+                    </span>
+                  )}
+                </h3>
+                <p className="text-gray-600 text-lg">
+                  {selectedGroup === "all" 
+                    ? "View and manage individual employee qualifications across all groups"
+                    : `View and manage qualifications for employees in Group ${selectedGroup}`
+                  }
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                    {selectedEmployees.length} Selected
+                  </div>
+                  <div className="bg-gray-100 text-gray-700 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                    {filteredEmployees.length} Showing
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                {selectedEmployees.length} Selected
-              </Badge>
-              <Badge variant="outline" className="bg-gray-100 text-gray-700">
-                {filteredEmployees.length} Showing
-              </Badge>
-            </div>
-          </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredEmployees.map((employee) => (
-              <div key={employee.id} className="bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="flex items-center">
-                      <Checkbox
-                        checked={selectedEmployees.includes(employee.id)}
-                        onCheckedChange={() => handleEmployeeSelection(employee.id)}
-                        className="mr-3"
-                      />
-                    </div>
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <Users className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="text-lg font-semibold text-gray-900">{employee.name}</h4>
-                        <Badge variant="outline">{employee.employeeId}</Badge>
-                        <Badge variant="outline" className="bg-green-100 text-green-800">
+              <div key={employee.id} className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                <div className="flex items-start gap-6">
+                  <div className="flex items-center">
+                    <Checkbox
+                      checked={selectedEmployees.includes(employee.id)}
+                      onCheckedChange={() => handleEmployeeSelection(employee.id)}
+                      className="w-6 h-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                    />
+                  </div>
+                  <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                      <h4 className="text-xl font-bold text-gray-900">{employee.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-blue-100 text-blue-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
+                          {employee.employeeId}
+                        </div>
+                        <div className="bg-green-100 text-green-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
                           {employee.status}
-                        </Badge>
-                        <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                          {employee.currentGroup}
-                        </Badge>
+                        </div>
+                        <div className="bg-purple-100 text-purple-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
+                          Group {employee.currentGroup}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 mb-3">
-                        <span className="font-medium">Email:</span> {employee.email} | 
-                        <span className="font-medium ml-2">Hire Date:</span> {employee.hireDate}
+                    </div>
+                    <div className="text-gray-600 mb-6">
+                      <span className="font-semibold">Email:</span> {employee.email} | 
+                      <span className="font-semibold ml-2">Hire Date:</span> {employee.hireDate}
+                    </div>
+                    
+                    {/* Current Qualifications */}
+                    <div className="mb-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-lg font-bold text-gray-700">Current Qualifications:</span>
+                        <div className="bg-blue-100 text-blue-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
+                          {employee.qualifications.length} assigned
+                        </div>
                       </div>
-                      
-                      {/* Current Qualifications */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-sm font-medium text-gray-700">Current Qualifications:</span>
-                        {employee.qualifications.length === 0 ? (
-                          <span className="text-sm text-gray-500 italic">None assigned</span>
-                        ) : (
-                          employee.qualifications.map((qualCode) => {
+                      {employee.qualifications.length === 0 ? (
+                        <div className="text-gray-500 italic bg-gray-100 rounded-lg p-4 text-center">
+                          No qualifications assigned yet
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-3">
+                          {employee.qualifications.map((qualCode) => {
                             const qualInfo = getQualificationInfo(qualCode)
                             return (
-                              <div key={qualCode} className="flex items-center gap-1">
-                                <Badge 
-                                  variant="outline" 
-                                  className={`${getQualificationColor(qualInfo?.level || 'basic')} relative group`}
-                                >
-                                  {qualCode}
+                              <div key={qualCode} className="relative group">
+                                <div className={`${getQualificationColor(qualInfo?.level || 'basic')} px-4 py-2 rounded-full shadow-sm font-semibold text-sm flex items-center gap-2`}>
+                                  <Award className="w-4 h-4" />
+                                  {qualCode} - {qualInfo?.name}
                                   <button
                                     onClick={() => handleRemoveQualification(employee.id, qualCode)}
-                                    className="ml-1 text-red-600 hover:text-red-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="ml-2 text-red-600 hover:text-red-800 opacity-0 group-hover:opacity-100 transition-opacity font-bold text-lg leading-none"
                                   >
                                     ×
                                   </button>
-                                </Badge>
+                                </div>
                               </div>
                             )
-                          })
-                        )}
-                      </div>
-                      
-                      {/* Quick Assign Buttons */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">Quick Assign:</span>
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Quick Assign Buttons */}
+                    <div className="flex items-center gap-4">
+                      <span className="text-lg font-bold text-gray-700">Quick Assign:</span>
+                      <div className="flex flex-wrap gap-3">
                         {qualifications.map((qual) => (
                           <Button
                             key={qual.id}
@@ -576,9 +582,13 @@ export default function QualificationsPage() {
                             size="sm"
                             onClick={() => handleQuickAssign(employee.id, qual.code)}
                             disabled={employee.qualifications.includes(qual.code)}
-                            className="h-8 text-xs"
+                            className={`h-10 px-4 text-sm font-semibold rounded-full transition-all duration-200 ${
+                              employee.qualifications.includes(qual.code)
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-white/80 text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 shadow-sm hover:shadow-md"
+                            }`}
                           >
-                            <Award className="w-3 h-3 mr-1" />
+                            <Award className="w-4 h-4 mr-2" />
                             {qual.code}
                           </Button>
                         ))}
@@ -598,6 +608,7 @@ export default function QualificationsPage() {
                 <p className="text-gray-600">Try adjusting your search criteria.</p>
               </div>
             )}
+          </div>
           </div>
         </div>
 

@@ -54,13 +54,13 @@ export default function VacationManagementPage() {
     router.push("/shift-manager")
   }
 
-  // Mock data for time-off requests with more realistic data
+  // Mock data for time-off requests with consistent employee data
   const [timeOffRequests, setTimeOffRequests] = useState<TimeOffRequest[]>([
-    // January 2025
+    // January 2025 - All dates within January 2025
     {
       id: "1",
-      employeeId: "1",
-      employeeName: "Sarah Johnson",
+      employeeId: "EMP001",
+      employeeName: "Employee AA",
       employeeGroup: "A",
       type: "vacation",
       startDate: "2025-01-15",
@@ -68,14 +68,14 @@ export default function VacationManagementPage() {
       days: 7,
       reason: "Family vacation to Spain",
       status: "approved",
-      submittedDate: "2024-12-15",
+      submittedDate: "2025-01-10",
       approvedBy: "Shift Manager",
-      approvedDate: "2024-12-16"
+      approvedDate: "2025-01-11"
     },
     {
       id: "2",
-      employeeId: "2",
-      employeeName: "Mike Chen",
+      employeeId: "EMP002",
+      employeeName: "Employee AB",
       employeeGroup: "B",
       type: "sick",
       startDate: "2025-01-10",
@@ -89,8 +89,8 @@ export default function VacationManagementPage() {
     },
     {
       id: "3",
-      employeeId: "3",
-      employeeName: "Emily Rodriguez",
+      employeeId: "EMP003",
+      employeeName: "Employee AC",
       employeeGroup: "A",
       type: "personal",
       startDate: "2025-01-25",
@@ -102,8 +102,8 @@ export default function VacationManagementPage() {
     },
     {
       id: "4",
-      employeeId: "4",
-      employeeName: "David Kim",
+      employeeId: "EMP004",
+      employeeName: "Employee AD",
       employeeGroup: "C",
       type: "sick",
       startDate: "2025-01-20",
@@ -115,16 +115,15 @@ export default function VacationManagementPage() {
       approvedBy: "Shift Manager",
       approvedDate: "2025-01-19",
     },
-    // February 2025
     {
       id: "5",
-      employeeId: "5",
-      employeeName: "Lisa Wang",
+      employeeId: "EMP005",
+      employeeName: "Employee AE",
       employeeGroup: "B",
       type: "vacation",
-      startDate: "2025-02-14",
-      endDate: "2025-02-18",
-      days: 5,
+      startDate: "2025-01-28",
+      endDate: "2025-01-31",
+      days: 4,
       reason: "Valentine's Day getaway",
       status: "approved",
       submittedDate: "2025-01-20",
@@ -133,76 +132,74 @@ export default function VacationManagementPage() {
     },
     {
       id: "6",
-      employeeId: "6",
-      employeeName: "James Wilson",
+      employeeId: "EMP006",
+      employeeName: "Employee AF",
       employeeGroup: "A",
       type: "personal",
-      startDate: "2025-02-05",
-      endDate: "2025-02-05",
+      startDate: "2025-01-18",
+      endDate: "2025-01-18",
       days: 1,
       reason: "Doctor appointment",
       status: "pending",
-      submittedDate: "2025-01-25"
+      submittedDate: "2025-01-15"
     },
-    // March 2025
     {
       id: "7",
-      employeeId: "7",
-      employeeName: "Anna Thompson",
+      employeeId: "EMP007",
+      employeeName: "Employee AG",
       employeeGroup: "C",
       type: "vacation",
-      startDate: "2025-03-10",
-      endDate: "2025-03-17",
-      days: 8,
+      startDate: "2025-01-30",
+      endDate: "2025-01-31",
+      days: 2,
       reason: "Spring break vacation",
       status: "approved",
-      submittedDate: "2025-02-01",
+      submittedDate: "2025-01-25",
       approvedBy: "Shift Manager",
-      approvedDate: "2025-02-02"
+      approvedDate: "2025-01-26"
     },
     {
       id: "8",
-      employeeId: "8",
-      employeeName: "Robert Brown",
+      employeeId: "EMP008",
+      employeeName: "Employee AH",
       employeeGroup: "B",
       type: "sick",
-      startDate: "2025-03-22",
-      endDate: "2025-03-24",
+      startDate: "2025-01-14",
+      endDate: "2025-01-16",
       days: 3,
       reason: "Allergy symptoms",
       status: "approved",
-      submittedDate: "2025-03-21",
+      submittedDate: "2025-01-13",
       approvedBy: "Shift Manager",
-      approvedDate: "2025-03-21"
+      approvedDate: "2025-01-13"
     },
-    // April 2025
     {
       id: "9",
-      employeeId: "9",
-      employeeName: "Maria Garcia",
+      employeeId: "EMP009",
+      employeeName: "Employee AI",
       employeeGroup: "A",
       type: "vacation",
-      startDate: "2025-04-15",
-      endDate: "2025-04-20",
-      days: 6,
+      startDate: "2025-01-23",
+      endDate: "2025-01-24",
+      days: 2,
       reason: "Easter holiday",
       status: "pending",
-      submittedDate: "2025-03-15"
+      submittedDate: "2025-01-20"
     },
     {
       id: "10",
-      employeeId: "10",
-      employeeName: "Kevin Lee",
+      employeeId: "EMP010",
+      employeeName: "Employee AJ",
       employeeGroup: "C",
       type: "personal",
-      startDate: "2025-04-08",
-      endDate: "2025-04-08",
+      startDate: "2025-01-17",
+      endDate: "2025-01-17",
       days: 1,
       reason: "Moving day",
       status: "rejected",
-      submittedDate: "2025-03-25",
+      submittedDate: "2025-01-16",
       approvedBy: "Shift Manager",
-      approvedDate: "2025-03-26"
+      approvedDate: "2025-01-16"
     }
   ])
 
@@ -332,26 +329,39 @@ export default function VacationManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      {/* Professional animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-40 left-1/2 w-60 h-60 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-6000"></div>
+      </div>
+      
+      <header className="glass-effect border-b border-white/30 shadow-modern-lg relative z-10">
+        <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={goBack} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={goBack} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
               </Button>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Vacation & Sick Leave Management</h1>
-                <p className="text-gray-600">Manage employee time-off requests and vacation planning</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-4xl font-bold text-gray-900">Vacations & Sick Leaves</h1>
+                  <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                    Manager Portal
+                  </div>
+                </div>
+                <p className="text-gray-600 text-lg">Manage employee time-off requests and vacation planning</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-blue-600 font-medium">Shift Manager</div>
+                <div className="text-blue-600 font-bold text-lg">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>
@@ -362,68 +372,72 @@ export default function VacationManagementPage() {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Overview Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">Time-Off Management Overview</h2>
-              <p className="text-lg text-gray-600">Monitor and manage employee vacation and sick leave requests</p>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-600">Pending Requests</div>
-                <div className="text-2xl font-bold text-yellow-600">{pendingRequests.length}</div>
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+          <div className="px-8 py-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-3">Time-Off Management Overview</h2>
+                <p className="text-lg text-gray-600">Monitor and manage employee vacation and sick leave requests</p>
               </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-600">Approved This Month</div>
-                <div className="text-2xl font-bold text-green-600">{approvedRequests.length}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-600">Total Requests</div>
-                <div className="text-2xl font-bold text-blue-600">{timeOffRequests.length}</div>
+              <div className="flex items-center gap-6">
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-600">Pending Requests</div>
+                  <div className="text-2xl font-bold text-yellow-600">{pendingRequests.length}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-600">Approved This Month</div>
+                  <div className="text-2xl font-bold text-green-600">{approvedRequests.length}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-600">Total Requests</div>
+                  <div className="text-2xl font-bold text-blue-600">{timeOffRequests.length}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-          <div className="flex border-b border-gray-200">
-            <button 
-              onClick={() => setActiveTab("requests")}
-              className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
-                activeTab === "requests" 
-                  ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${activeTab === "requests" ? "bg-blue-100" : "bg-gray-100"}`}>
-                  <FileText className="h-5 w-5" />
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+          <div className="px-8 py-6">
+            <div className="flex border-b border-gray-200">
+              <button 
+                onClick={() => setActiveTab("requests")}
+                className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
+                  activeTab === "requests" 
+                    ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg ${activeTab === "requests" ? "bg-blue-100" : "bg-gray-100"}`}>
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">Requests</div>
+                    <div className="text-sm opacity-75">Review and approve time-off requests</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-semibold">Requests</div>
-                  <div className="text-sm opacity-75">Review and approve time-off requests</div>
+              </button>
+              <button 
+                onClick={() => setActiveTab("calendar")}
+                className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
+                  activeTab === "calendar" 
+                    ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg ${activeTab === "calendar" ? "bg-blue-100" : "bg-gray-100"}`}>
+                    <CalendarDays className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold">Calendar</div>
+                    <div className="text-sm opacity-75">View upcoming vacations</div>
+                  </div>
                 </div>
-              </div>
-            </button>
-            <button 
-              onClick={() => setActiveTab("calendar")}
-              className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
-                activeTab === "calendar" 
-                  ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${activeTab === "calendar" ? "bg-blue-100" : "bg-gray-100"}`}>
-                  <CalendarDays className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="font-semibold">Calendar</div>
-                  <div className="text-sm opacity-75">View upcoming vacations</div>
-                </div>
-              </div>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -431,25 +445,29 @@ export default function VacationManagementPage() {
         {activeTab === "requests" && (
           <div className="space-y-8">
             {/* Search and Filter */}
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Time-Off Requests</h3>
-                  <p className="text-gray-600">Review and manage employee time-off requests</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <FileText className="w-5 h-5 text-blue-600" />
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+              <div className="px-8 py-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Time-Off Requests</h3>
+                    <p className="text-gray-600 text-lg">Review and manage employee time-off requests</p>
                   </div>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                    {filteredRequests.length} Requests
-                  </Badge>
+                  <div className="flex items-center gap-3">
+                    <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
+                      <FileText className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                      {filteredRequests.length} Requests
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="space-y-2">
-                  <Label htmlFor="search" className="text-sm font-semibold text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-4">
+                  <Label htmlFor="search" className="text-lg font-bold text-gray-700 flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
                     Search Requests
                   </Label>
                   <Input
@@ -457,18 +475,21 @@ export default function VacationManagementPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search by employee name, ID, or reason..."
-                    className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="modern-input h-14 px-4 py-3 text-base border-white/30 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="filter-status" className="text-sm font-semibold text-gray-700">
-                    Status
+                <div className="space-y-4">
+                  <Label htmlFor="filter-status" className="text-lg font-bold text-gray-700 flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    Status Filter
                   </Label>
                   <Select value={filterStatus} onValueChange={(value: "all" | "pending" | "approved" | "rejected") => {
                     setFilterStatus(value)
                   }}>
-                    <SelectTrigger className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectTrigger className="modern-input h-14 px-4 py-3 text-base border-white/30 focus:border-blue-500 focus:ring-blue-500">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -482,80 +503,93 @@ export default function VacationManagementPage() {
               </div>
 
               {/* Requests List */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {filteredRequests.map((request) => (
-                  <div key={request.id} className="bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                          <Calendar className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="text-lg font-semibold text-gray-900">{request.employeeName}</h4>
-                            <Badge variant="outline">{request.employeeId}</Badge>
-                            <Badge variant="outline" className={getTypeColor(request.type)}>
+                  <div key={request.id} className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                    <div className="flex items-start gap-6">
+                      <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
+                        <Calendar className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-4">
+                          <h4 className="text-xl font-bold text-gray-900">{request.employeeName}</h4>
+                          <div className="flex items-center gap-2">
+                            <div className="bg-blue-100 text-blue-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
+                              {request.employeeId}
+                            </div>
+                            <div className={`px-3 py-1 text-sm font-semibold rounded-full shadow-sm ${getTypeColor(request.type)}`}>
                               {request.type.charAt(0).toUpperCase() + request.type.slice(1)}
-                            </Badge>
-                            <Badge variant="outline" className={getStatusColor(request.status)}>
+                            </div>
+                            <div className={`px-3 py-1 text-sm font-semibold rounded-full shadow-sm ${getStatusColor(request.status)}`}>
                               {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                            </Badge>
+                            </div>
                           </div>
-                          <div className="text-sm text-gray-600 mb-2">
-                            <span className="font-medium">Reason:</span> {request.reason}
+                        </div>
+                        <div className="text-gray-600 mb-4">
+                          <span className="font-semibold">Reason:</span> {request.reason}
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                          <div>
+                            <span className="font-semibold">Period:</span><br />
+                            {request.startDate} to {request.endDate}
                           </div>
-                          <div className="flex items-center gap-6 text-sm text-gray-600">
-                            <div>
-                              <span className="font-medium">Period:</span> {request.startDate} to {request.endDate}
-                            </div>
-                            <div>
-                              <span className="font-medium">Days:</span> {request.days}
-                            </div>
-                            <div>
-                              <span className="font-medium">Group:</span> {request.employeeGroup || "Unassigned"}
-                            </div>
-                            <div>
-                              <span className="font-medium">Submitted:</span> {request.submittedDate}
-                            </div>
+                          <div>
+                            <span className="font-semibold">Days:</span><br />
+                            {request.days}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Group:</span><br />
+                            {request.employeeGroup || "Unassigned"}
+                          </div>
+                          <div>
+                            <span className="font-semibold">Submitted:</span><br />
+                            {request.submittedDate}
                           </div>
                         </div>
                       </div>
                       
-                      {request.status === "pending" && (
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => handleApproveRequest(request.id)}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                            size="sm"
-                          >
-                            <UserCheck className="w-4 h-4 mr-1" />
-                            Approve
-                          </Button>
-                          <Button 
-                            onClick={() => handleRejectRequest(request.id)}
-                            variant="outline"
-                            className="border-red-300 text-red-700 hover:bg-red-50"
-                            size="sm"
-                          >
-                            <UserX className="w-4 h-4 mr-1" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
-                      
-                      {request.status === "approved" && (
-                        <div className="flex items-center gap-2 text-green-600">
-                          <CheckCircle className="w-5 h-5" />
-                          <span className="text-sm font-medium">Approved by {request.approvedBy}</span>
-                        </div>
-                      )}
-                      
-                      {request.status === "rejected" && (
-                        <div className="flex items-center gap-2 text-red-600">
-                          <XCircle className="w-5 h-5" />
-                          <span className="text-sm font-medium">Rejected by {request.approvedBy}</span>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-3">
+                        {request.status === "pending" && (
+                          <div className="flex gap-3">
+                            <Button 
+                              onClick={() => handleApproveRequest(request.id)}
+                              className="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 px-6 py-3"
+                              style={{borderRadius: '9999px'}}
+                            >
+                              <UserCheck className="w-5 h-5 mr-2" />
+                              Approve
+                            </Button>
+                            <Button 
+                              onClick={() => handleRejectRequest(request.id)}
+                              className="btn-modern border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 shadow-lg px-6 py-3"
+                              style={{borderRadius: '9999px'}}
+                            >
+                              <UserX className="w-5 h-5 mr-2" />
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {request.status === "approved" && (
+                          <div className="flex items-center gap-3 text-green-600 bg-green-50 rounded-xl p-4">
+                            <CheckCircle className="w-6 h-6" />
+                            <div>
+                              <div className="font-semibold">Approved</div>
+                              <div className="text-sm">by {request.approvedBy}</div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {request.status === "rejected" && (
+                          <div className="flex items-center gap-3 text-red-600 bg-red-50 rounded-xl p-4">
+                            <XCircle className="w-6 h-6" />
+                            <div>
+                              <div className="font-semibold">Rejected</div>
+                              <div className="text-sm">by {request.approvedBy}</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -569,6 +603,7 @@ export default function VacationManagementPage() {
                     <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
                   </div>
                 )}
+              </div>
               </div>
             </div>
           </div>

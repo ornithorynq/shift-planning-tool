@@ -23,7 +23,6 @@ import {
   Send,
   ChevronLeft,
   ChevronRight,
-  Award,
   X,
   UserCheck,
   UserX,
@@ -77,13 +76,18 @@ type QualificationCoverage = {
 
 export default function ShiftManagerPage() {
   const router = useRouter()
-  const [viewMode, setViewMode] = useState<"overview" | "matrix">("overview")
+  const [viewMode, setViewMode] = useState<"overview" | "matrix" | "create-shift">("overview")
   const [newShiftDate, setNewShiftDate] = useState("")
   const [newShiftType, setNewShiftType] = useState("")
   const [newShiftQualification, setNewShiftQualification] = useState("")
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 0)) // January 2025
   const [showOpenShiftsModal, setShowOpenShiftsModal] = useState(false)
   const [showActiveShiftsModal, setShowActiveShiftsModal] = useState(false)
+  const [showErrorState, setShowErrorState] = useState(false)
+  const [showEmptyState, setShowEmptyState] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
@@ -98,6 +102,30 @@ export default function ShiftManagerPage() {
       shiftType: "Early Shift",
       qualification: "Q1",
       reason: "Vacation AA (Approved)",
+      status: "open"
+    },
+    {
+      id: "2",
+      date: "2025-01-05",
+      shiftType: "Late Shift",
+      qualification: "Q2",
+      reason: "Sick Leave - COVID-19",
+      status: "open"
+    },
+    {
+      id: "3",
+      date: "2025-01-06",
+      shiftType: "Night Shift",
+      qualification: "Q1",
+      reason: "Family Emergency",
+      status: "open"
+    },
+    {
+      id: "4",
+      date: "2025-01-07",
+      shiftType: "Early Shift",
+      qualification: "Q3",
+      reason: "No-show (No prior notice)",
       status: "open"
     }
   ])
@@ -136,12 +164,18 @@ export default function ShiftManagerPage() {
     {
       qualification: "Q2 (Required: 1)",
       required: 1,
+      available: 1,
+      status: "covered"
+    },
+    {
+      qualification: "Q3 (Required: 1)",
+      required: 1,
       available: 0,
       status: "understaffed"
     }
   ])
 
-  // Mock data for active shifts today
+  // Enhanced mock data for active shifts today with realistic scenarios
   const activeShiftsData = [
     {
       id: "1",
@@ -150,10 +184,13 @@ export default function ShiftManagerPage() {
       shiftType: "Early Shift",
       startTime: "06:00",
       endTime: "14:00",
-      location: "Main Plant",
+      location: "Main Plant - Production Line A",
       qualification: "Q1",
       status: "in-progress",
-      progress: 65
+      progress: 65,
+      lastCheckIn: "08:30",
+      performance: "excellent",
+      notes: "Running ahead of schedule"
     },
     {
       id: "2", 
@@ -162,10 +199,13 @@ export default function ShiftManagerPage() {
       shiftType: "Late Shift",
       startTime: "14:00",
       endTime: "22:00",
-      location: "Main Plant",
+      location: "Main Plant - Quality Control",
       qualification: "Q2",
       status: "in-progress",
-      progress: 25
+      progress: 25,
+      lastCheckIn: "14:15",
+      performance: "good",
+      notes: "Equipment maintenance in progress"
     },
     {
       id: "3",
@@ -174,10 +214,28 @@ export default function ShiftManagerPage() {
       shiftType: "Night Shift",
       startTime: "22:00",
       endTime: "06:00",
-      location: "Secondary Facility",
+      location: "Secondary Facility - Warehouse",
       qualification: "Q1",
       status: "in-progress",
-      progress: 80
+      progress: 80,
+      lastCheckIn: "23:45",
+      performance: "excellent",
+      notes: "Inventory count completed early"
+    },
+    {
+      id: "4",
+      employeeName: "David Kim",
+      employeeId: "EMP004",
+      shiftType: "Early Shift",
+      startTime: "06:00",
+      endTime: "14:00",
+      location: "Main Plant - Packaging",
+      qualification: "Q3",
+      status: "in-progress",
+      progress: 40,
+      lastCheckIn: "07:20",
+      performance: "needs-attention",
+      notes: "Running behind due to equipment issues"
     }
   ]
 
@@ -199,28 +257,45 @@ export default function ShiftManagerPage() {
   }
 
   const exportToExcel = () => {
-    // Simulate Excel export
-    const data = {
-      shifts: bringShifts,
-      requests: openRequests,
-      employees: employeeReports,
-      coverage: qualificationCoverage
-    }
-    console.log("Exporting data to Excel:", data)
-    // In a real app, this would trigger a download
-    alert("Excel export functionality would be implemented here")
+    setIsLoading(true)
+    // Simulate Excel export with realistic delay
+    setTimeout(() => {
+      const data = {
+        shifts: bringShifts,
+        requests: openRequests,
+        employees: employeeReports,
+        coverage: qualificationCoverage
+      }
+      console.log("Exporting data to Excel:", data)
+      setIsLoading(false)
+      setSuccessMessage("Excel report exported successfully! Check your downloads folder.")
+      setShowSuccessMessage(true)
+      setTimeout(() => setShowSuccessMessage(false), 3000)
+    }, 1500)
   }
 
   const sendNotifications = () => {
-    // Simulate sending notifications to employees
-    console.log("Sending notifications to employees")
-    alert("Notifications sent to relevant employees")
+    setIsLoading(true)
+    // Simulate sending notifications with realistic delay
+    setTimeout(() => {
+      console.log("Sending notifications to employees")
+      setIsLoading(false)
+      setSuccessMessage("Notifications sent to 12 employees successfully!")
+      setShowSuccessMessage(true)
+      setTimeout(() => setShowSuccessMessage(false), 3000)
+    }, 2000)
   }
 
   const refreshData = () => {
-    // Simulate data refresh
-    console.log("Refreshing shift data")
-    alert("Data refreshed successfully")
+    setIsLoading(true)
+    // Simulate data refresh with realistic delay
+    setTimeout(() => {
+      console.log("Refreshing shift data")
+      setIsLoading(false)
+      setSuccessMessage("Data refreshed successfully! 3 new updates found.")
+      setShowSuccessMessage(true)
+      setTimeout(() => setShowSuccessMessage(false), 3000)
+    }, 1000)
   }
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -454,20 +529,32 @@ export default function ShiftManagerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      {/* Professional animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-40 left-1/2 w-60 h-60 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-6000"></div>
+      </div>
+      <header className="glass-effect border-b border-white/30 shadow-modern-lg relative z-10">
+        <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Planning Dashboard</h1>
-              <p className="text-gray-600">Welcome, Shift Manager. Control of cross-location personnel planning.</p>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-4xl font-bold text-gray-900">Planning Dashboard</h1>
+                <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                  Manager Portal
+                </div>
+              </div>
+              <p className="text-gray-600 text-lg">Welcome back! Here's your shift management overview.</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-blue-600 font-medium">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
@@ -475,28 +562,28 @@ export default function ShiftManagerPage() {
           </div>
           
           {/* Management Tools Navigation */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-white/30">
             <div className="flex flex-wrap gap-3">
               <Link href="/shift-manager/shift-cycles">
-                <Button variant="outline" size="sm" className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
+                <Button variant="outline" size="sm" className="btn-modern border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 shadow-lg h-10 px-4" style={{borderRadius: '9999px'}}>
                   <Settings className="w-4 h-4 mr-2" />
                   Configure Cycles
                 </Button>
               </Link>
               <Link href="/shift-manager/employee-assignment">
-                <Button variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
+                <Button variant="outline" size="sm" className="btn-modern border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 shadow-lg h-10 px-4" style={{borderRadius: '9999px'}}>
                   <Users className="w-4 h-4 mr-2" />
                   Assign Employees
                 </Button>
               </Link>
               <Link href="/shift-manager/qualifications">
-                <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
-                  <Award className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="sm" className="btn-modern border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 shadow-lg h-10 px-4" style={{borderRadius: '9999px'}}>
+                  <Users className="w-4 h-4 mr-2" />
                   Qualifications
                 </Button>
               </Link>
               <Link href="/shift-manager/vacation-management">
-                <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
+                <Button variant="outline" size="sm" className="btn-modern border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 shadow-lg h-10 px-4" style={{borderRadius: '9999px'}}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Vacation Management
                 </Button>
@@ -504,16 +591,49 @@ export default function ShiftManagerPage() {
               
               {/* Quick Actions */}
               <div className="ml-auto flex gap-2">
-                <Button variant="outline" size="sm" onClick={exportToExcel} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={exportToExcel} 
+                  disabled={isLoading}
+                  className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
+                  style={{borderRadius: '9999px'}}
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
                   Export
                 </Button>
-                <Button variant="outline" size="sm" onClick={sendNotifications} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
-                  <Send className="w-4 h-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={sendNotifications} 
+                  disabled={isLoading}
+                  className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
+                  style={{borderRadius: '9999px'}}
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  ) : (
+                    <Send className="w-4 h-4 mr-2" />
+                  )}
                   Notify
                 </Button>
-                <Button variant="outline" size="sm" onClick={refreshData} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
-                  <RefreshCw className="w-4 h-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={refreshData} 
+                  disabled={isLoading}
+                  className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
+                  style={{borderRadius: '9999px'}}
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  ) : (
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                  )}
                   Refresh
                 </Button>
               </div>
@@ -522,29 +642,60 @@ export default function ShiftManagerPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-in slide-in-from-right duration-300">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5" />
+            <span className="font-medium">{successMessage}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 flex items-center gap-3 shadow-2xl border border-white/20">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span className="text-gray-700 font-medium">Processing...</span>
+          </div>
+        </div>
+      )}
+
+      <main className="relative z-10">
+        <div className="max-w-7xl mx-auto section-padding">
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <div className="flex border-b border-gray-200">
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+          <div className="flex border-b border-white/30 overflow-x-auto">
             <button 
               onClick={() => setViewMode("overview")}
-              className={`flex-1 px-6 py-4 text-left font-medium transition-all duration-200 ease-out ${
+              className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative border-r border-gray-200/50 ${
                 viewMode === "overview" 
-                  ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm"
+                  ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
               }`}
             >
               Overview
             </button>
             <button 
               onClick={() => setViewMode("matrix")}
-              className={`flex-1 px-6 py-4 text-left font-medium transition-all duration-200 ease-out ${
+              className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative border-r border-gray-200/50 ${
                 viewMode === "matrix" 
-                  ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm"
+                  ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
               }`}
             >
               Shift Matrix
+            </button>
+            <button 
+              onClick={() => setViewMode("create-shift")}
+              className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative ${
+                viewMode === "create-shift" 
+                  ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
+              }`}
+            >
+              Create Shift
             </button>
           </div>
         </div>
@@ -552,7 +703,7 @@ export default function ShiftManagerPage() {
         {viewMode === "overview" && (
           <div className="space-y-6">
             {/* Overview Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-3">Overview Dashboard</h2>
                 <p className="text-lg text-gray-600">Current status and quick actions for shift management</p>
@@ -562,7 +713,7 @@ export default function ShiftManagerPage() {
             {/* Overview Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div 
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-300 ease-out border-l-4 border-l-orange-500 cursor-pointer hover:-translate-y-1"
+                className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-orange-300 transition-all duration-500 ease-out border-l-4 border-l-orange-500 cursor-pointer hover:-translate-y-2 hover:scale-[1.02] group"
                 onClick={handleOpenShiftsClick}
               >
                 <div className="p-6">
@@ -575,14 +726,17 @@ export default function ShiftManagerPage() {
                     </Badge>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-orange-600 mb-2">{totalOpenShifts}</div>
-                    <div className="text-xl font-semibold text-gray-900 mb-1">Open Bring-Shifts</div>
-                    <div className="text-sm text-gray-600">Require immediate attention</div>
+                    <div className="text-5xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform duration-300">{totalOpenShifts}</div>
+                    <div className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-orange-700 transition-colors duration-300">Open Bring-Shifts</div>
+                    <div className="text-sm text-gray-600 group-hover:text-orange-600 transition-colors duration-300">Require immediate attention</div>
+                    <div className="mt-2 text-xs text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Click to view details →
+                    </div>
                   </div>
                 </div>
               </div>
               <div 
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-300 ease-out border-l-4 border-l-blue-500 cursor-pointer hover:-translate-y-1"
+                className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-500 ease-out border-l-4 border-l-blue-500 cursor-pointer hover:-translate-y-2 hover:scale-[1.02] group"
                 onClick={handleActiveShiftsClick}
               >
                 <div className="p-6">
@@ -595,16 +749,19 @@ export default function ShiftManagerPage() {
                     </Badge>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-blue-600 mb-2">{activeShiftsToday}</div>
-                    <div className="text-xl font-semibold text-gray-900 mb-1">Active Shifts Today</div>
-                    <div className="text-sm text-gray-600">Currently running</div>
+                    <div className="text-5xl font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform duration-300">{activeShiftsToday}</div>
+                    <div className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors duration-300">Active Shifts Today</div>
+                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors duration-300">Currently running</div>
+                    <div className="mt-2 text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Click to monitor →
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Daily Coverage by Qualification */}
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Daily Coverage by Qualification</h3>
@@ -618,9 +775,9 @@ export default function ShiftManagerPage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div 
-                  className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 hover:shadow-lg hover:border-green-300 transition-all duration-300 ease-out border-l-4 border-l-green-600 hover:-translate-y-0.5 cursor-pointer"
+                  className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out border-l-4 border-l-green-600 hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-green-50/50 to-green-100/50 p-6"
                   onClick={() => handleQualificationClick('Q1')}
                 >
                   <div className="flex items-center justify-between">
@@ -647,8 +804,35 @@ export default function ShiftManagerPage() {
                 </div>
                 
                 <div 
-                  className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all duration-300 ease-out border-l-4 border-l-red-600 hover:-translate-y-0.5 cursor-pointer"
+                  className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out border-l-4 border-l-green-600 hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-green-50/50 to-green-100/50 p-6"
                   onClick={() => handleQualificationClick('Q2')}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-200 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-700" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Q2 Qualification</div>
+                        <div className="text-sm text-gray-600">Required: 1 position</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-bold text-green-700">1</div>
+                      <div className="text-sm text-green-600 font-medium">Available</div>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="w-full bg-green-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full" style={{width: '100%'}}></div>
+                    </div>
+                    <div className="text-xs text-green-700 mt-1">100% Coverage</div>
+                  </div>
+                </div>
+                
+                <div 
+                  className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-red-300 transition-all duration-300 ease-out border-l-4 border-l-red-600 hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-red-50/50 to-red-100/50 p-6"
+                  onClick={() => handleQualificationClick('Q3')}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -656,7 +840,7 @@ export default function ShiftManagerPage() {
                         <XCircle className="w-5 h-5 text-red-700" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Q2 Qualification</div>
+                        <div className="font-semibold text-gray-900">Q3 Qualification</div>
                         <div className="text-sm text-gray-600">Required: 1 position</div>
                       </div>
                     </div>
@@ -675,7 +859,7 @@ export default function ShiftManagerPage() {
               </div>
               
               <div 
-                className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 hover:border-amber-300 transition-all duration-200 ease-out"
+                className="mt-6 p-4 glass-effect rounded-lg cursor-pointer hover:bg-amber-100/50 hover:border-amber-300 transition-all duration-200 ease-out bg-gradient-to-r from-amber-50/50 to-orange-50/50"
                 onClick={handleRestPeriodClick}
               >
                 <div className="flex items-center gap-2">
@@ -686,98 +870,9 @@ export default function ShiftManagerPage() {
               </div>
             </div>
 
-            {/* Bring-Shifts Management & Creation */}
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Create New Bring-Shift</h3>
-                  <p className="text-gray-600">Add a new shift that needs to be filled by employees</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Plus className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="shift-date" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      Shift Date
-                    </Label>
-                    <Input
-                      id="shift-date"
-                      type="date"
-                      value={newShiftDate}
-                      onChange={(e) => setNewShiftDate(e.target.value)}
-                      className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm"
-                      placeholder="Select date"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="shift-type" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      Shift Type
-                    </Label>
-                    <Select value={newShiftType} onValueChange={setNewShiftType}>
-                      <SelectTrigger className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500" size="default">
-                        <SelectValue placeholder="Select shift type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="early">Early Shift (6:00 - 14:00)</SelectItem>
-                        <SelectItem value="late">Late Shift (14:00 - 22:00)</SelectItem>
-                        <SelectItem value="night">Night Shift (22:00 - 6:00)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="qualification" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      Qualification
-                    </Label>
-                    <Select value={newShiftQualification} onValueChange={setNewShiftQualification}>
-                      <SelectTrigger className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500" size="default">
-                        <SelectValue placeholder="Select qualification" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="q1">Q1 - Basic Level</SelectItem>
-                        <SelectItem value="q2">Q2 - Intermediate Level</SelectItem>
-                        <SelectItem value="q3">Q3 - Advanced Level</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="flex flex-col justify-end h-full">
-                    <div className="h-6"></div> {/* Spacer to align with input fields */}
-                    <Button 
-                      onClick={handleCreateShift} 
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                      disabled={!newShiftDate || !newShiftType || !newShiftQualification}
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Publish Shift
-                    </Button>
-                  </div>
-                </div>
-                
-                {newShiftDate && newShiftType && newShiftQualification && (
-                  <div className="mt-6 p-4 bg-white border border-blue-200 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm text-blue-700">
-                      <CheckCircle className="w-4 h-4" />
-                      <span className="font-medium">Ready to publish:</span>
-                      <span>{newShiftType} on {newShiftDate} requiring {newShiftQualification} qualification</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Open Requests */}
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Open Shift Requests</h3>
@@ -795,7 +890,7 @@ export default function ShiftManagerPage() {
               
               <div className="space-y-4">
                 {openRequests.map((request) => (
-                  <div key={request.id} className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                  <div key={request.id} className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-amber-300 transition-all duration-300 ease-out hover:-translate-y-0.5 bg-gradient-to-r from-amber-50/50 to-orange-50/50 p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-start gap-4">
                         <div className="p-3 bg-amber-200 rounded-lg">
@@ -827,11 +922,11 @@ export default function ShiftManagerPage() {
                           <div className="text-xs text-gray-500">Last updated 2 hours ago</div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                          <Button variant="outline" size="sm" className="btn-modern border-amber-300 text-amber-700 hover:bg-amber-50 shadow-lg">
                             <Eye className="w-4 h-4 mr-1" />
                             View
                           </Button>
-                          <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                          <Button size="sm" className="btn-modern bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg">
                             Assign
                           </Button>
                         </div>
@@ -853,7 +948,7 @@ export default function ShiftManagerPage() {
             </div>
 
             {/* Rest Period Check */}
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Rest Period Compliance Check</h3>
@@ -871,7 +966,7 @@ export default function ShiftManagerPage() {
               
               <div className="space-y-4">
                 <div 
-                  className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 hover:shadow-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer"
+                  className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-green-50/50 to-emerald-50/50 p-6"
                   onClick={handleComplianceCardClick}
                 >
                   <div className="flex items-center justify-between">
@@ -902,7 +997,7 @@ export default function ShiftManagerPage() {
                         <div className="text-sm font-medium text-green-700 mb-1">Compliant</div>
                         <div className="text-xs text-gray-500">Last checked 1 hour ago</div>
                       </div>
-                      <Button variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50">
+                      <Button variant="outline" size="sm" className="btn-modern border-green-300 text-green-700 hover:bg-green-50 shadow-lg">
                         <Eye className="w-4 h-4 mr-1" />
                         Details
                       </Button>
@@ -911,7 +1006,7 @@ export default function ShiftManagerPage() {
                 </div>
                 
                 <div 
-                  className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer"
+                  className="glass-effect rounded-xl shadow-modern hover:shadow-modern-lg hover:border-red-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-red-50/50 to-rose-50/50 p-6"
                   onClick={handleComplianceCardClick}
                 >
                   <div className="flex items-center justify-between">
@@ -943,11 +1038,11 @@ export default function ShiftManagerPage() {
                         <div className="text-xs text-gray-500">Last checked 1 hour ago</div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="border-red-300 text-red-700 hover:bg-red-50">
+                        <Button variant="outline" size="sm" className="btn-modern border-red-300 text-red-700 hover:bg-red-50 shadow-lg">
                           <Eye className="w-4 h-4 mr-1" />
                           Details
                         </Button>
-                        <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+                        <Button size="sm" className="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg">
                           Resolve
                         </Button>
                       </div>
@@ -956,7 +1051,7 @@ export default function ShiftManagerPage() {
                 </div>
               </div>
               
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mt-6 p-4 glass-effect rounded-lg bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-blue-600" />
                   <span className="font-medium text-blue-800">Compliance Summary:</span>
@@ -968,8 +1063,8 @@ export default function ShiftManagerPage() {
         )}
 
         {viewMode === "matrix" && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-            <div className="p-6">
+          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-6">
+            <div className="p-8">
               {/* Matrix Header */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
@@ -977,7 +1072,7 @@ export default function ShiftManagerPage() {
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Shift Matrix Capacity Planning</h2>
                     <p className="text-sm text-gray-600">Entire Plant - Next 13 Months</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={exportToExcel} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <Button variant="outline" size="sm" onClick={exportToExcel} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                     <Download className="w-4 h-4 mr-2" />
                     Export
                   </Button>
@@ -989,7 +1084,7 @@ export default function ShiftManagerPage() {
                     variant="outline" 
                     size="sm" 
                     onClick={() => navigateMonth('prev')}
-                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
+                    className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg"
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
@@ -1004,87 +1099,78 @@ export default function ShiftManagerPage() {
                     variant="outline" 
                     size="sm" 
                     onClick={() => navigateMonth('next')}
-                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
+                    className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg"
                   >
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-slate-700 mb-2">
-                    <span className="font-medium">Legend:</span> F=Early, S=Late, N=Night, U=Vacation, A=Bring-shift-Assigned
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Employee columns are frozen - scroll horizontally to view daily shifts</span>
-                  </div>
-                </div>
               </div>
 
               {/* Legend */}
-              <div className="flex flex-wrap gap-8 mb-8 text-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-emerald-100 rounded-md"></div>
-                  <span className="font-medium text-gray-700">F - Early Shift</span>
+              <div className="flex flex-wrap gap-8 mb-8 text-base">
+                <div className="flex items-center gap-4">
+                  <div className="w-6 h-6 bg-emerald-100 rounded-xl shadow-sm"></div>
+                  <span className="font-semibold text-gray-800">F - Early Shift</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-amber-100 rounded-md"></div>
-                  <span className="font-medium text-gray-700">S - Late Shift</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-6 h-6 bg-amber-100 rounded-xl shadow-sm"></div>
+                  <span className="font-semibold text-gray-800">S - Late Shift</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-blue-100 rounded-md"></div>
-                  <span className="font-medium text-gray-700">N - Night Shift</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-6 h-6 bg-blue-100 rounded-xl shadow-sm"></div>
+                  <span className="font-semibold text-gray-800">N - Night Shift</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-orange-100 rounded-md"></div>
-                  <span className="font-medium text-gray-700">U - Vacation</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-6 h-6 bg-orange-100 rounded-xl shadow-sm"></div>
+                  <span className="font-semibold text-gray-800">U - Vacation</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-red-100 rounded-md"></div>
-                  <span className="font-medium text-gray-700">A - Bring-shift-Assigned</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-6 h-6 bg-red-100 rounded-xl shadow-sm"></div>
+                  <span className="font-semibold text-gray-800">A - Bring-shift-Assigned</span>
                 </div>
               </div>
 
               {/* Main Matrix Table */}
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="glass-effect border-white/30 rounded-2xl overflow-hidden shadow-modern">
                 <div className="flex relative">
                   {/* Fixed Columns Container */}
-                  <div className="bg-white border-r-2 border-slate-200 shadow-lg z-10 sticky left-0">
+                  <div className="glass-effect border-r-2 border-white/30 shadow-lg z-10 sticky left-0">
                     {/* Fixed Header */}
-                    <div className="bg-slate-50 border-b border-slate-200">
-                      <div className="flex text-xs font-semibold text-slate-700 uppercase tracking-wide py-4 px-6 h-14 items-center">
+                    <div className="bg-white/50 border-b border-white/30">
+                      <div className="flex text-xs font-semibold text-gray-700 uppercase tracking-wide py-5 px-6 h-16 items-center">
                         <div className="w-48 text-left">Employee</div>
-                        <div className="w-16 text-center">Shifts</div>
-                        <div className="w-16 text-center">Vacation</div>
-                        <div className="w-16 text-center">Bring-Shifts</div>
-                        <div className="w-16 text-center">Conversion</div>
+                        <div className="w-20 text-center">Shifts</div>
+                        <div className="w-20 text-center">Vacation</div>
+                        <div className="w-24 text-center">Bring-Shifts</div>
+                        <div className="w-20 text-center">Conversion</div>
                       </div>
-                      <div className="flex text-xs font-medium text-slate-500 py-3 px-6 bg-white h-10 items-center">
-                        <div className="w-112"></div>
+                      <div className="flex text-sm font-medium text-gray-600 py-4 px-6 bg-white/30 h-12 items-center">
+                        <div className="w-132"></div>
                       </div>
                     </div>
 
                     {/* Fixed Employee Rows */}
-                    <div className="bg-white">
+                    <div className="bg-white/30">
                       {employeeData.map((employee, index) => (
-                        <div key={index} className="border-b border-slate-100 hover:bg-slate-50 hover:shadow-sm transition-all duration-200 ease-out">
-                          <div className="flex text-sm py-4 px-6 h-14 items-center">
-                            <div className="w-48 font-semibold text-slate-900">{employee.name}</div>
-                            <div className="w-16 text-center text-slate-700 font-medium">{employee.shifts}</div>
-                            <div className="w-16 text-center text-slate-700 font-medium">{employee.vacation}</div>
-                            <div className="w-16 text-center text-slate-700 font-medium">{employee.bringShifts}</div>
-                            <div className="w-16 text-center text-slate-700 font-medium">{employee.conversion}</div>
+                        <div key={index} className="border-b border-white/30 hover:bg-white/50 hover:shadow-sm transition-all duration-200 ease-out">
+                          <div className="flex text-base py-5 px-6 h-16 items-center">
+                            <div className="w-48 font-semibold text-gray-800">{employee.name}</div>
+                            <div className="w-20 text-center text-gray-600 font-medium">{employee.shifts}</div>
+                            <div className="w-20 text-center text-gray-600 font-medium">{employee.vacation}</div>
+                            <div className="w-24 text-center text-gray-600 font-medium">{employee.bringShifts}</div>
+                            <div className="w-20 text-center text-gray-600 font-medium">{employee.conversion}</div>
                           </div>
                         </div>
                       ))}
 
                       {/* Fixed Summary Rows */}
-                      <div className="bg-slate-50 border-t border-slate-200">
-                        <div className="flex text-sm py-4 px-6 h-14 items-center">
-                          <div className="w-112 font-semibold text-slate-700">Attendance own shift</div>
+                      <div className="bg-white/50 border-t border-white/30">
+                        <div className="flex text-base py-5 px-6 h-16 items-center">
+                          <div className="w-132 font-semibold text-gray-700">Attendance own shift</div>
                         </div>
-                        <div className="flex text-sm py-4 px-6 h-14 items-center">
-                          <div className="w-112 font-semibold text-slate-700">Planned total attendance</div>
+                        <div className="flex text-base py-5 px-6 h-16 items-center">
+                          <div className="w-132 font-semibold text-gray-700">Planned total attendance</div>
                         </div>
                       </div>
                     </div>
@@ -1094,11 +1180,11 @@ export default function ShiftManagerPage() {
                   <div className="flex-1 overflow-x-auto">
                     <div className="min-w-max">
                       {/* Scrollable Header */}
-                      <div className="bg-slate-50 border-b border-slate-200">
-                        <div className="flex text-xs font-semibold text-slate-700 uppercase tracking-wide py-4 px-6 h-14 items-center">
+                      <div className="bg-white/50 border-b border-white/30">
+                        <div className="flex text-sm font-semibold text-gray-700 uppercase tracking-wide py-5 px-6 h-16 items-center">
                           <div className="w-372 text-left">{getMonthName(currentMonth)}</div>
                         </div>
-                        <div className="flex text-xs font-medium text-slate-500 py-3 px-6 bg-white h-10 items-center gap-1">
+                        <div className="flex text-sm font-medium text-gray-600 py-4 px-6 bg-white/30 h-12 items-center gap-1">
                           {Array.from({ length: getDaysInMonth(currentMonth) }, (_, i) => (
                             <div key={i} className="w-10 text-center">{i + 1}</div>
                           ))}
@@ -1106,12 +1192,12 @@ export default function ShiftManagerPage() {
                       </div>
 
                       {/* Scrollable Employee Rows */}
-                      <div className="bg-white">
+                      <div className="bg-white/30">
                         {employeeData.map((employee, index) => (
-                          <div key={index} className="border-b border-slate-100 hover:bg-slate-50 hover:shadow-sm transition-all duration-200 ease-out">
-                            <div className="flex text-sm py-4 px-6 h-14 items-center gap-1">
+                          <div key={index} className="border-b border-white/30 hover:bg-white/50 hover:shadow-sm transition-all duration-200 ease-out">
+                            <div className="flex text-base py-5 px-6 h-16 items-center gap-1">
                               {generateShiftData(currentMonth, index).map((day, dayIndex) => (
-                                <div key={dayIndex} className={`w-10 h-10 text-center text-slate-900 font-semibold text-xs ${getShiftColor(day)} flex items-center justify-center rounded-md shadow-sm`}>
+                                <div key={dayIndex} className={`w-10 h-10 text-center text-gray-800 font-semibold text-sm ${getShiftColor(day)} flex items-center justify-center rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}>
                                   {day}
                                 </div>
                               ))}
@@ -1120,19 +1206,19 @@ export default function ShiftManagerPage() {
                         ))}
 
                         {/* Scrollable Summary Rows */}
-                        <div className="bg-slate-50 border-t border-slate-200">
-                          <div className="flex text-sm py-4 px-6 h-14 items-center gap-1">
+                        <div className="bg-white/50 border-t border-white/30">
+                          <div className="flex text-base py-5 px-6 h-16 items-center gap-1">
                             {Array.from({ length: getDaysInMonth(currentMonth) }, (_, i) => {
                               const isJanuary2025 = currentMonth.getMonth() === 0 && currentMonth.getFullYear() === 2025
                               const value = isJanuary2025 ? (i < 12 ? '6' : '') : (Math.random() < 0.7 ? String(Math.floor(Math.random() * 8) + 4) : '')
                               return (
-                                <div key={i} className="w-10 text-center text-slate-700 font-semibold">
+                                <div key={i} className="w-10 text-center text-gray-600 font-medium">
                                   {value}
                                 </div>
                               )
                             })}
                           </div>
-                          <div className="flex text-sm py-4 px-6 h-14 items-center gap-1">
+                          <div className="flex text-base py-5 px-6 h-16 items-center gap-1">
                             {Array.from({ length: getDaysInMonth(currentMonth) }, (_, i) => {
                               const isJanuary2025 = currentMonth.getMonth() === 0 && currentMonth.getFullYear() === 2025
                               let value = ''
@@ -1146,7 +1232,7 @@ export default function ShiftManagerPage() {
                               }
                               
                               return (
-                                <div key={i} className="w-10 text-center text-slate-700 font-semibold">
+                                <div key={i} className="w-10 text-center text-gray-600 font-medium">
                                   {value}
                                 </div>
                               );
@@ -1162,12 +1248,98 @@ export default function ShiftManagerPage() {
           </div>
         )}
 
+        {viewMode === "create-shift" && (
+          <div className="space-y-6">
+            {/* Create New Bring-Shift */}
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold text-gray-900 mb-3">Create New Bring-Shift</h3>
+                <p className="text-gray-600 text-lg">Add a new shift that needs to be filled by employees</p>
+              </div>
+              
+              <div className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="space-y-3">
+                    <Label htmlFor="shift-date" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                      <Calendar className="w-5 h-5 text-blue-600" />
+                      Shift Date
+                    </Label>
+                    <Input
+                      id="shift-date"
+                      type="date"
+                      value={newShiftDate}
+                      onChange={(e) => setNewShiftDate(e.target.value)}
+                      className="h-14 px-4 py-3 text-base rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
+                      placeholder="Select date"
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label htmlFor="shift-type" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-blue-600" />
+                      Shift Type
+                    </Label>
+                    <Select value={newShiftType} onValueChange={setNewShiftType}>
+                      <SelectTrigger className="h-14 px-4 py-3 text-base rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200" size="default">
+                        <SelectValue placeholder="Select shift type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="early">Early Shift (6:00 - 14:00)</SelectItem>
+                        <SelectItem value="late">Late Shift (14:00 - 22:00)</SelectItem>
+                        <SelectItem value="night">Night Shift (22:00 - 6:00)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label htmlFor="qualification" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                      <Users className="w-5 h-5 text-blue-600" />
+                      Qualification
+                    </Label>
+                    <Select value={newShiftQualification} onValueChange={setNewShiftQualification}>
+                      <SelectTrigger className="h-14 px-4 py-3 text-base rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200" size="default">
+                        <SelectValue placeholder="Select qualification" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="q1">Q1 - Basic Level</SelectItem>
+                        <SelectItem value="q2">Q2 - Intermediate Level</SelectItem>
+                        <SelectItem value="q3">Q3 - Advanced Level</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="h-6"></div> {/* Spacer to align with labels */}
+                    <Button 
+                      onClick={handleCreateShift} 
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full h-14 rounded-full"
+                      disabled={!newShiftDate || !newShiftType || !newShiftQualification}
+                    >
+                      Publish Shift
+                    </Button>
+                  </div>
+                </div>
+                
+                {newShiftDate && newShiftType && newShiftQualification && (
+                  <div className="mt-8 p-6 glass-effect rounded-2xl border-white/30 bg-gradient-to-r from-green-50/50 to-emerald-50/50">
+                    <div className="flex items-center gap-3 text-base text-green-700">
+                      <CheckCircle className="w-5 h-5" />
+                      <span className="font-semibold">Ready to publish:</span>
+                      <span>{newShiftType} on {newShiftDate} requiring {newShiftQualification} qualification</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        </div>
       </main>
 
       {/* Open Bring-Shifts Modal */}
       <Dialog open={showOpenShiftsModal} onOpenChange={setShowOpenShiftsModal}>
-        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border-2 border-gray-200 shadow-2xl">
-          <DialogHeader className="border-b border-gray-200 pb-4">
+        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-100 pb-6">
             <DialogTitle className="flex items-center gap-3 text-xl font-semibold">
               <AlertTriangle className="w-6 h-6 text-orange-600" />
               Open Bring-Shifts Requiring Attention
@@ -1179,19 +1351,19 @@ export default function ShiftManagerPage() {
           
           <div className="space-y-4">
             {bringShifts.filter(shift => shift.status === "open").map((shift) => (
-              <div key={shift.id} className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-4 w-full">
+              <div key={shift.id} className="bg-gray-50 rounded-2xl border border-gray-200 p-6 w-full hover:bg-gray-100 transition-colors duration-200">
                 {/* Header Section */}
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="p-2 bg-orange-200 rounded-lg flex-shrink-0">
-                    <Clock className="w-5 h-5 text-orange-700" />
+                <div className="flex items-start gap-4 mb-5">
+                  <div className="p-3 bg-orange-100 rounded-xl flex-shrink-0">
+                    <Clock className="w-6 h-6 text-orange-600" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">{shift.shiftType}</h4>
-                      <Badge variant="outline" className="bg-orange-100 text-orange-800 px-2 py-1 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 mb-3">
+                      <h4 className="text-xl font-semibold text-gray-900">{shift.shiftType}</h4>
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 px-3 py-1 text-sm font-medium rounded-full">
                         {shift.qualification}
                       </Badge>
-                      <Badge variant="outline" className="bg-red-100 text-red-800 px-2 py-1 text-xs">
+                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 px-3 py-1 text-sm font-medium rounded-full">
                         Open
                       </Badge>
                     </div>
@@ -1199,32 +1371,32 @@ export default function ShiftManagerPage() {
                 </div>
 
                 {/* Details Section */}
-                <div className="space-y-2 mb-4">
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Date:</span> {shift.date}
+                <div className="space-y-3 mb-6">
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Date:</span> {shift.date}
                   </div>
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Reason:</span> {shift.reason}
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Reason:</span> {shift.reason}
                   </div>
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Status:</span> <span className="text-orange-700">Requires immediate assignment</span>
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Status:</span> <span className="text-orange-600 font-medium">Requires immediate assignment</span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     onClick={() => handleAssignShift(shift.id)}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm flex-1 sm:flex-none"
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base font-semibold flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <UserCheck className="w-4 h-4 mr-2" />
+                    <UserCheck className="w-5 h-5 mr-2" />
                     Assign Employee
                   </Button>
                   <Button 
                     variant="outline"
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-6 py-3 text-base font-semibold flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-5 h-5 mr-2" />
                     View Details
                   </Button>
                 </div>
@@ -1246,8 +1418,8 @@ export default function ShiftManagerPage() {
 
       {/* Active Shifts Modal */}
       <Dialog open={showActiveShiftsModal} onOpenChange={setShowActiveShiftsModal}>
-        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border-2 border-gray-200 shadow-2xl">
-          <DialogHeader className="border-b border-gray-200 pb-4">
+        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-100 pb-6">
             <DialogTitle className="flex items-center gap-3 text-xl font-semibold">
               <Clock className="w-6 h-6 text-blue-600" />
               Active Shifts Today
@@ -1259,20 +1431,20 @@ export default function ShiftManagerPage() {
           
           <div className="space-y-4">
             {activeShiftsData.map((shift) => (
-              <div key={shift.id} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 w-full">
+              <div key={shift.id} className="bg-gray-50 rounded-2xl border border-gray-200 p-6 w-full hover:bg-gray-100 transition-colors duration-200">
                 {/* Header Section */}
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="p-2 bg-blue-200 rounded-lg flex-shrink-0">
-                    <Users className="w-5 h-5 text-blue-700" />
+                <div className="flex items-start gap-4 mb-5">
+                  <div className="p-3 bg-blue-100 rounded-xl flex-shrink-0">
+                    <Users className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">{shift.employeeName}</h4>
-                      <Badge variant="outline" className="px-2 py-1 text-xs">{shift.employeeId}</Badge>
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 px-2 py-1 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 mb-3">
+                      <h4 className="text-xl font-semibold text-gray-900">{shift.employeeName}</h4>
+                      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 px-3 py-1 text-sm font-medium rounded-full">{shift.employeeId}</Badge>
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 px-3 py-1 text-sm font-medium rounded-full">
                         {shift.shiftType}
                       </Badge>
-                      <Badge variant="outline" className="bg-green-100 text-green-800 px-2 py-1 text-xs">
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 px-3 py-1 text-sm font-medium rounded-full">
                         In Progress
                       </Badge>
                     </div>
@@ -1280,55 +1452,55 @@ export default function ShiftManagerPage() {
                 </div>
 
                 {/* Details Section */}
-                <div className="space-y-2 mb-4">
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Time:</span> {shift.startTime} - {shift.endTime}
+                <div className="space-y-3 mb-6">
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Time:</span> {shift.startTime} - {shift.endTime}
                   </div>
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Location:</span> {shift.location}
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Location:</span> {shift.location}
                   </div>
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Qualification:</span> {shift.qualification}
+                  <div className="text-base text-gray-700">
+                    <span className="font-semibold text-gray-900">Qualification:</span> {shift.qualification}
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                    <span className="font-medium">Shift Progress</span>
-                    <span className="font-semibold text-blue-600">{shift.progress}%</span>
+                <div className="mb-6">
+                  <div className="flex items-center justify-between text-base text-gray-700 mb-3">
+                    <span className="font-semibold text-gray-900">Shift Progress</span>
+                    <span className="font-bold text-blue-600">{shift.progress}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="w-full bg-gray-200 rounded-full h-4">
                     <div 
-                      className="bg-blue-600 h-3 rounded-full transition-all duration-300" 
+                      className="bg-blue-600 h-4 rounded-full transition-all duration-300" 
                       style={{width: `${shift.progress}%`}}
                     ></div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     onClick={() => handleContactEmployee(shift.employeeId)}
                     variant="outline"
-                    className="border-blue-300 text-blue-700 hover:bg-blue-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-6 py-3 text-base font-semibold flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <Phone className="w-4 h-4 mr-2" />
+                    <Phone className="w-5 h-5 mr-2" />
                     Call
                   </Button>
                   <Button 
                     onClick={() => handleContactEmployee(shift.employeeId)}
                     variant="outline"
-                    className="border-blue-300 text-blue-700 hover:bg-blue-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-6 py-3 text-base font-semibold flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <Mail className="w-4 h-4 mr-2" />
+                    <Mail className="w-5 h-5 mr-2" />
                     Message
                   </Button>
                   <Button 
                     variant="outline"
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-6 py-3 text-base font-semibold flex-1 sm:flex-none rounded-full shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-5 h-5 mr-2" />
                     Details
                   </Button>
                 </div>
@@ -1337,6 +1509,7 @@ export default function ShiftManagerPage() {
           </div>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }
