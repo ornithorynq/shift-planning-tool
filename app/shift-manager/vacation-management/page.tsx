@@ -276,7 +276,6 @@ export default function VacationManagementPage() {
   const getVacationEventsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
     return timeOffRequests.filter(req => 
-      req.status === "approved" && 
       dateStr >= req.startDate && 
       dateStr <= req.endDate
     )
@@ -612,81 +611,83 @@ export default function VacationManagementPage() {
         {/* Calendar Tab */}
         {activeTab === "calendar" && (
           <div className="space-y-8">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Vacation Calendar</h3>
-                  <p className="text-gray-600">Visual overview of all time-off requests and vacations</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Vacation Calendar</h3>
+                  <p className="text-gray-600 text-lg">Visual overview of all time-off requests and vacations</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <CalendarDays className="w-5 h-5 text-green-600" />
+                    <div className="p-3 bg-green-200 rounded-xl shadow-sm">
+                      <CalendarDays className="w-6 h-6 text-green-600" />
                     </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    <div className="status-success px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
                       {approvedRequests.length} Approved
-                    </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Calendar Grid */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Calendar View</h3>
-                  <div className="flex items-center gap-2">
+              <div className="glass-effect rounded-2xl border-white/20 p-8 bg-white/60 backdrop-blur-xl">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-xl font-bold text-gray-900">Calendar View</h4>
+                  <div className="flex items-center gap-3">
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => navigateMonth('prev')}
-                      className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg"
                     >
-                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      <ChevronLeft className="w-4 h-4 mr-2" />
                       Previous
                     </Button>
-                    <span className="font-medium">{getMonthName(currentMonth)}</span>
+                    <div className="px-4 py-2 bg-white/50 rounded-xl shadow-sm">
+                      <span className="font-semibold text-gray-900">{getMonthName(currentMonth)}</span>
+                    </div>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => navigateMonth('next')}
-                      className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg"
                     >
                       Next
-                      <ChevronRight className="w-4 h-4 ml-1" />
+                      <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
                 </div>
                 
                 {/* Legend */}
-                <div className="flex flex-wrap gap-4 mb-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-green-100 border border-green-500"></div>
-                    <span>Vacation (Approved)</span>
+                <div className="flex flex-wrap gap-6 mb-6 text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-green-100 border-2 border-green-500 rounded-lg shadow-sm"></div>
+                    <span className="font-semibold text-gray-800">Vacation (Approved)</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-yellow-100 border border-dashed border-yellow-500"></div>
-                    <span>Vacation (Requested)</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-yellow-100 border-2 border-dashed border-yellow-500 rounded-lg shadow-sm"></div>
+                    <span className="font-semibold text-gray-800">Vacation (Requested)</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-red-100 border border-dashed border-red-500"></div>
-                    <span>Vacation (Rejected)</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-red-100 border-2 border-dashed border-red-500 rounded-lg shadow-sm"></div>
+                    <span className="font-semibold text-gray-800">Vacation (Rejected)</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-blue-100 border border-blue-500"></div>
-                    <span>Sick Leave</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-blue-100 border-2 border-blue-500 rounded-lg shadow-sm"></div>
+                    <span className="font-semibold text-gray-800">Sick Leave</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-purple-100 border border-purple-500"></div>
-                    <span>Personal</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-purple-100 border-2 border-purple-500 rounded-lg shadow-sm"></div>
+                    <span className="font-semibold text-gray-800">Personal</span>
                   </div>
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-2">
                   {/* Days of week */}
                   {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map((day) => (
-                    <div key={day} className={`text-center text-sm font-medium p-2 ${
-                      day === "Sa" || day === "So" ? "text-red-600" : "text-gray-600"
+                    <div key={day} className={`text-center text-sm font-bold p-3 bg-white/50 rounded-lg shadow-sm ${
+                      day === "Sa" || day === "So" ? "text-red-600" : "text-gray-700"
                     }`}>
                       {day}
                     </div>
@@ -694,7 +695,7 @@ export default function VacationManagementPage() {
                   
                   {/* Empty cells for days before the 1st of the month */}
                   {Array.from({ length: getFirstDayOfMonth(currentMonth) }).map((_, i) => (
-                    <div key={`empty-start-${i}`} className="min-h-[80px] bg-gray-50 border border-gray-200 rounded p-1"></div>
+                    <div key={`empty-start-${i}`} className="min-h-[100px] bg-white/30 border border-white/40 rounded-xl p-2 shadow-sm"></div>
                   ))}
 
                   {/* Calendar days */}
@@ -710,10 +711,10 @@ export default function VacationManagementPage() {
                     return (
                       <div 
                         key={i} 
-                        className="min-h-[80px] border border-gray-200 rounded p-1 bg-white hover:bg-gray-50 cursor-pointer"
+                        className="min-h-[100px] border border-white/40 rounded-xl p-2 bg-white/50 hover:bg-white/70 hover:shadow-md cursor-pointer transition-all duration-200 ease-out"
                         onClick={() => setSelectedDate(date)}
                       >
-                        <div className="text-sm font-medium mb-1 text-gray-900">
+                        <div className="text-sm font-bold mb-2 text-gray-900">
                           {dayOfMonth}
                         </div>
                         <div className="space-y-1">
@@ -738,14 +739,19 @@ export default function VacationManagementPage() {
                               }
                             }
                             
+                            const getEventText = (vacation: any) => {
+                              // Show only employee name
+                              return vacation.employeeName
+                            }
+                            
                             return (
                               <div
                                 key={vacation.id}
-                                className={`text-xs p-1 rounded ${getVacationStyle(vacation.type, vacation.status)}`}
+                                className={`text-xs p-2 rounded-lg shadow-sm font-medium ${getVacationStyle(vacation.type, vacation.status)}`}
                                 title={`${vacation.employeeName} - ${vacation.reason}`}
                               >
                                 <div className="font-medium truncate">
-                                  {vacation.type === 'sick' ? 'S...' : vacation.type === 'personal' ? 'P...' : 'V...'}
+                                  {getEventText(vacation)}
                                 </div>
                               </div>
                             )
@@ -757,15 +763,15 @@ export default function VacationManagementPage() {
 
                   {/* Empty cells for days after the end of the month to fill the last row */}
                   {Array.from({ length: 7 - ((getFirstDayOfMonth(currentMonth) + getDaysInMonth(currentMonth)) % 7 || 7) }).map((_, i) => (
-                    <div key={`empty-end-${i}`} className="min-h-[80px] bg-gray-50 border border-gray-200 rounded p-1"></div>
+                    <div key={`empty-end-${i}`} className="min-h-[100px] bg-white/30 border border-white/40 rounded-xl p-2 shadow-sm"></div>
                   ))}
                 </div>
               </div>
 
               {/* Selected Date Details */}
               {selectedDate && (
-                <div className="mt-6 bg-gray-50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="mt-8 glass-effect rounded-2xl border-white/20 p-8 bg-white/60 backdrop-blur-xl">
+                  <h4 className="text-xl font-bold text-gray-900 mb-6">
                     {selectedDate.toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -774,17 +780,17 @@ export default function VacationManagementPage() {
                     })}
                   </h4>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {getVacationEventsForDate(selectedDate).length > 0 ? (
                       getVacationEventsForDate(selectedDate).map((event) => (
-                        <div key={event.id} className="bg-white border border-gray-200 rounded-lg p-4">
+                        <div key={event.id} className="glass-effect rounded-xl border-white/30 p-6 bg-white/80 backdrop-blur-xl shadow-modern">
                           <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${getTypeColor(event.type)}`}>
-                              <Calendar className="w-4 h-4" />
+                            <div className={`p-3 rounded-xl shadow-sm ${getTypeColor(event.type)}`}>
+                              <Calendar className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <h5 className="font-semibold text-gray-900">{event.employeeName}</h5>
+                                <h5 className="font-bold text-gray-900">{event.employeeName}</h5>
                                 <Badge variant="outline" className={getTypeColor(event.type)}>
                                   {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
                                 </Badge>
@@ -792,8 +798,8 @@ export default function VacationManagementPage() {
                                   {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-gray-600 mb-2">{event.reason}</p>
-                              <div className="text-xs text-gray-500">
+                              <p className="text-sm text-gray-700 mb-3 font-medium">{event.reason}</p>
+                              <div className="text-xs text-gray-600 font-medium">
                                 {event.startDate} - {event.endDate} ({event.days} days) | Group: {event.employeeGroup}
                               </div>
                             </div>
@@ -801,9 +807,12 @@ export default function VacationManagementPage() {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p>No vacation events on this date</p>
+                      <div className="text-center py-12 text-gray-600">
+                        <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                          <Calendar className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h4 className="text-lg font-semibold text-gray-900 mb-2">No vacation events on this date</h4>
+                        <p className="text-gray-600">Select another date to view vacation details.</p>
                       </div>
                     )}
                   </div>
