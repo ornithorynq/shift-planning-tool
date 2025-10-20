@@ -22,7 +22,13 @@ import {
   RefreshCw,
   Send,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Award,
+  X,
+  UserCheck,
+  UserX,
+  Phone,
+  Mail
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,6 +36,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { NotificationCenter } from "@/components/notification-center"
 
 type BringShift = {
@@ -75,6 +82,8 @@ export default function ShiftManagerPage() {
   const [newShiftType, setNewShiftType] = useState("")
   const [newShiftQualification, setNewShiftQualification] = useState("")
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 0)) // January 2025
+  const [showOpenShiftsModal, setShowOpenShiftsModal] = useState(false)
+  const [showActiveShiftsModal, setShowActiveShiftsModal] = useState(false)
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
@@ -131,6 +140,46 @@ export default function ShiftManagerPage() {
       status: "understaffed"
     }
   ])
+
+  // Mock data for active shifts today
+  const activeShiftsData = [
+    {
+      id: "1",
+      employeeName: "Sarah Johnson",
+      employeeId: "EMP001",
+      shiftType: "Early Shift",
+      startTime: "06:00",
+      endTime: "14:00",
+      location: "Main Plant",
+      qualification: "Q1",
+      status: "in-progress",
+      progress: 65
+    },
+    {
+      id: "2", 
+      employeeName: "Mike Chen",
+      employeeId: "EMP002",
+      shiftType: "Late Shift",
+      startTime: "14:00",
+      endTime: "22:00",
+      location: "Main Plant",
+      qualification: "Q2",
+      status: "in-progress",
+      progress: 25
+    },
+    {
+      id: "3",
+      employeeName: "Emily Rodriguez", 
+      employeeId: "EMP003",
+      shiftType: "Night Shift",
+      startTime: "22:00",
+      endTime: "06:00",
+      location: "Secondary Facility",
+      qualification: "Q1",
+      status: "in-progress",
+      progress: 80
+    }
+  ]
 
   const handleCreateShift = () => {
     if (newShiftDate && newShiftType && newShiftQualification) {
@@ -364,6 +413,31 @@ export default function ShiftManagerPage() {
     }
   }
 
+  const handleOpenShiftsClick = () => {
+    setShowOpenShiftsModal(true)
+  }
+
+  const handleActiveShiftsClick = () => {
+    setShowActiveShiftsModal(true)
+  }
+
+  const handleAssignShift = (shiftId: string) => {
+    // Navigate to employee assignment page with shift ID
+    const shift = bringShifts.find(s => s.id === shiftId)
+    if (shift) {
+      // Close the modal first
+      setShowOpenShiftsModal(false)
+      // Navigate to employee assignment page with shift details
+      router.push(`/shift-manager/employee-assignment?shiftId=${shiftId}&date=${shift.date}&type=${encodeURIComponent(shift.shiftType)}&qualification=${shift.qualification}`)
+    }
+  }
+
+  const handleContactEmployee = (employeeId: string) => {
+    // Mock contact logic
+    console.log(`Contacting employee ${employeeId}`)
+    alert(`Contact functionality for employee ${employeeId} would be implemented here`)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
@@ -373,7 +447,7 @@ export default function ShiftManagerPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Planning Dashboard</h1>
               <p className="text-gray-600">Welcome, Shift Manager. Control of cross-location personnel planning.</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-blue-600 font-medium">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
@@ -382,6 +456,52 @@ export default function ShiftManagerPage() {
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
+            </div>
+          </div>
+          
+          {/* Management Tools Navigation */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex flex-wrap gap-3">
+              <Link href="/shift-manager/shift-cycles">
+                <Button variant="outline" size="sm" className="border-purple-300 text-purple-700 hover:bg-purple-50 h-10 px-4">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Configure Cycles
+                </Button>
+              </Link>
+              <Link href="/shift-manager/employee-assignment">
+                <Button variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50 h-10 px-4">
+                  <Users className="w-4 h-4 mr-2" />
+                  Assign Employees
+                </Button>
+              </Link>
+              <Link href="/shift-manager/qualifications">
+                <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-50 h-10 px-4">
+                  <Award className="w-4 h-4 mr-2" />
+                  Qualifications
+                </Button>
+              </Link>
+              <Link href="/shift-manager/vacation-management">
+                <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-50 h-10 px-4">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Vacation Management
+                </Button>
+              </Link>
+              
+              {/* Quick Actions */}
+              <div className="ml-auto flex gap-2">
+                <Button variant="outline" size="sm" onClick={exportToExcel} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+                <Button variant="outline" size="sm" onClick={sendNotifications} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                  <Send className="w-4 h-4 mr-2" />
+                  Notify
+                </Button>
+                <Button variant="outline" size="sm" onClick={refreshData} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -426,7 +546,10 @@ export default function ShiftManagerPage() {
 
             {/* Overview Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-orange-500">
+              <div 
+                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-orange-500 cursor-pointer hover:scale-105 transform transition-all duration-200"
+                onClick={handleOpenShiftsClick}
+              >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-orange-100 rounded-lg">
@@ -443,7 +566,10 @@ export default function ShiftManagerPage() {
                   </div>
                 </div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-blue-500">
+              <div 
+                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-blue-500 cursor-pointer hover:scale-105 transform transition-all duration-200"
+                onClick={handleActiveShiftsClick}
+              >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-blue-100 rounded-lg">
@@ -1007,6 +1133,180 @@ export default function ShiftManagerPage() {
         )}
 
       </main>
+
+      {/* Open Bring-Shifts Modal */}
+      <Dialog open={showOpenShiftsModal} onOpenChange={setShowOpenShiftsModal}>
+        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border-2 border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-200 pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl font-semibold">
+              <AlertTriangle className="w-6 h-6 text-orange-600" />
+              Open Bring-Shifts Requiring Attention
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 mt-2">
+              Manage and assign employees to open bring-shifts that need immediate attention.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {bringShifts.filter(shift => shift.status === "open").map((shift) => (
+              <div key={shift.id} className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-4 w-full">
+                {/* Header Section */}
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="p-2 bg-orange-200 rounded-lg flex-shrink-0">
+                    <Clock className="w-5 h-5 text-orange-700" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <h4 className="text-lg font-semibold text-gray-900">{shift.shiftType}</h4>
+                      <Badge variant="outline" className="bg-orange-100 text-orange-800 px-2 py-1 text-xs">
+                        {shift.qualification}
+                      </Badge>
+                      <Badge variant="outline" className="bg-red-100 text-red-800 px-2 py-1 text-xs">
+                        Open
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Details Section */}
+                <div className="space-y-2 mb-4">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Date:</span> {shift.date}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Reason:</span> {shift.reason}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Status:</span> <span className="text-orange-700">Requires immediate assignment</span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button 
+                    onClick={() => handleAssignShift(shift.id)}
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm flex-1 sm:flex-none"
+                  >
+                    <UserCheck className="w-4 h-4 mr-2" />
+                    Assign Employee
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Details
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            {bringShifts.filter(shift => shift.status === "open").length === 0 && (
+              <div className="text-center py-12">
+                <div className="p-4 bg-green-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">All caught up!</h4>
+                <p className="text-gray-600">No open bring-shifts requiring immediate attention.</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Active Shifts Modal */}
+      <Dialog open={showActiveShiftsModal} onOpenChange={setShowActiveShiftsModal}>
+        <DialogContent className="w-[90vw] max-w-[1200px] max-h-[90vh] overflow-y-auto bg-white border-2 border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-200 pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl font-semibold">
+              <Clock className="w-6 h-6 text-blue-600" />
+              Active Shifts Today
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 mt-2">
+              Monitor currently running shifts and manage employee activities.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {activeShiftsData.map((shift) => (
+              <div key={shift.id} className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 w-full">
+                {/* Header Section */}
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="p-2 bg-blue-200 rounded-lg flex-shrink-0">
+                    <Users className="w-5 h-5 text-blue-700" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <h4 className="text-lg font-semibold text-gray-900">{shift.employeeName}</h4>
+                      <Badge variant="outline" className="px-2 py-1 text-xs">{shift.employeeId}</Badge>
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 px-2 py-1 text-xs">
+                        {shift.shiftType}
+                      </Badge>
+                      <Badge variant="outline" className="bg-green-100 text-green-800 px-2 py-1 text-xs">
+                        In Progress
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Details Section */}
+                <div className="space-y-2 mb-4">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Time:</span> {shift.startTime} - {shift.endTime}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Location:</span> {shift.location}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Qualification:</span> {shift.qualification}
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                    <span className="font-medium">Shift Progress</span>
+                    <span className="font-semibold text-blue-600">{shift.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-blue-600 h-3 rounded-full transition-all duration-300" 
+                      style={{width: `${shift.progress}%`}}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button 
+                    onClick={() => handleContactEmployee(shift.employeeId)}
+                    variant="outline"
+                    className="border-blue-300 text-blue-700 hover:bg-blue-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call
+                  </Button>
+                  <Button 
+                    onClick={() => handleContactEmployee(shift.employeeId)}
+                    variant="outline"
+                    className="border-blue-300 text-blue-700 hover:bg-blue-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Message
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm flex-1 sm:flex-none"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Details
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
