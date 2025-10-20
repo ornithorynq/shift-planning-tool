@@ -605,68 +605,80 @@ export default function EmployeePage() {
 
           {/* Shift History Tab Content */}
           {activeTab === "shift-history" && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Shift History</h2>
-                <p className="text-sm text-gray-600 mb-6">Completed Shifts (Current Month)</p>
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+              <div className="card-padding">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Shift History</h2>
+                    <p className="text-gray-600 text-lg">Completed Shifts (Current Month)</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-blue-200 rounded-xl shadow-sm">
+                      <Calendar className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="status-success px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                      5 Completed
+                    </div>
+                  </div>
+                </div>
                 
-                <div className="overflow-hidden border border-gray-200 rounded-lg">
-                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                    <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-600 uppercase tracking-wide">
+                <div className="glass-effect rounded-2xl border-white/20 overflow-hidden shadow-modern">
+                  <div className="glass-effect bg-white/50 px-6 py-4 border-b border-white/30">
+                    <div className="grid grid-cols-4 gap-6 text-sm font-bold text-gray-700 uppercase tracking-wide">
                       <div>Date</div>
                       <div>Shift</div>
                       <div>Duration (Hrs)</div>
                       <div>Status</div>
                     </div>
                   </div>
-                  <div className="divide-y divide-gray-200">
-                    <div className="px-4 py-3 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="font-medium text-gray-900">12/28</div>
-                        <div className="text-sm text-gray-600">Early Shift (Q1)</div>
-                        <div className="text-sm text-gray-600">8.0</div>
+                  <div className="bg-white/30">
+                    <div className="glass-effect rounded-xl border-white/30 p-6 m-4 shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                      <div className="grid grid-cols-4 gap-6 items-center">
+                        <div className="font-bold text-gray-900">12/28</div>
+                        <div className="text-sm font-medium text-gray-700">Early Shift (Q1)</div>
+                        <div className="text-sm font-medium text-gray-700">8.0</div>
                         <div>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                          <span className="status-success px-3 py-1 text-sm font-semibold rounded-full shadow-sm">Completed</span>
                         </div>
                       </div>
                     </div>
-                    <div className="px-4 py-3 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="font-medium text-gray-900">12/30</div>
-                        <div className="text-sm text-gray-600">Late Shift (Q2)</div>
-                        <div className="text-sm text-gray-600">8.0</div>
+                    <div className="glass-effect rounded-xl border-white/30 p-6 m-4 shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                      <div className="grid grid-cols-4 gap-6 items-center">
+                        <div className="font-bold text-gray-900">12/30</div>
+                        <div className="text-sm font-medium text-gray-700">Late Shift (Q2)</div>
+                        <div className="text-sm font-medium text-gray-700">8.0</div>
                         <div>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                          <span className="status-success px-3 py-1 text-sm font-semibold rounded-full shadow-sm">Completed</span>
                         </div>
                       </div>
                     </div>
-                    <div className="px-4 py-3 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="font-medium text-gray-900">01/01</div>
-                        <div className="text-sm text-gray-600">Early Shift (Q1)</div>
-                        <div className="text-sm text-gray-600">8.0</div>
+                    <div className="glass-effect rounded-xl border-white/30 p-6 m-4 shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                      <div className="grid grid-cols-4 gap-6 items-center">
+                        <div className="font-bold text-gray-900">01/01</div>
+                        <div className="text-sm font-medium text-gray-700">Early Shift (Q1)</div>
+                        <div className="text-sm font-medium text-gray-700">8.0</div>
                         <div>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                          <span className="status-success px-3 py-1 text-sm font-semibold rounded-full shadow-sm">Completed</span>
                         </div>
                       </div>
                     </div>
-                    <div className="px-4 py-3 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="font-medium text-gray-900">01/03</div>
-                        <div className="text-sm text-gray-600">Late Shift (Q2)</div>
-                        <div className="text-sm text-gray-600">8.0</div>
+                    <div className="glass-effect rounded-xl border-white/30 p-6 m-4 shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                      <div className="grid grid-cols-4 gap-6 items-center">
+                        <div className="font-bold text-gray-900">01/03</div>
+                        <div className="text-sm font-medium text-gray-700">Late Shift (Q2)</div>
+                        <div className="text-sm font-medium text-gray-700">8.0</div>
                         <div>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                          <span className="status-success px-3 py-1 text-sm font-semibold rounded-full shadow-sm">Completed</span>
                         </div>
                       </div>
                     </div>
-                    <div className="px-4 py-3 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="font-medium text-gray-900">01/05</div>
-                        <div className="text-sm text-gray-600">Night Shift (Q3)</div>
-                        <div className="text-sm text-gray-600">8.0</div>
+                    <div className="glass-effect rounded-xl border-white/30 p-6 m-4 shadow-modern hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                      <div className="grid grid-cols-4 gap-6 items-center">
+                        <div className="font-bold text-gray-900">01/05</div>
+                        <div className="text-sm font-medium text-gray-700">Night Shift (Q3)</div>
+                        <div className="text-sm font-medium text-gray-700">8.0</div>
                         <div>
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Completed</span>
+                          <span className="status-success px-3 py-1 text-sm font-semibold rounded-full shadow-sm">Completed</span>
                         </div>
                       </div>
                     </div>
@@ -678,53 +690,76 @@ export default function EmployeePage() {
 
           {/* Profile Tab Content */}
           {activeTab === "profile" && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-6">My Profile</h2>
+            <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+              <div className="card-padding">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">My Profile</h2>
+                    <p className="text-gray-600 text-lg">Personal and work information</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-blue-200 rounded-xl shadow-sm">
+                      <Calendar className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="status-info px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                      Employee Portal
+                    </div>
+                  </div>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Personal Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-md font-semibold text-gray-900">Personal Information</h3>
-                    <div className="space-y-3">
+                  <div className="glass-effect rounded-2xl border-white/20 p-8 bg-white/60 backdrop-blur-xl">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 bg-blue-200 rounded-xl shadow-sm">
+                        <Calendar className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Personal Information</h3>
+                    </div>
+                    <div className="space-y-6">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
-                        <input value="Alex Anderson" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Full Name</label>
+                        <input value="Alex Anderson" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Employee ID</label>
-                        <input value="7345" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Employee ID</label>
+                        <input value="7345" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
-                        <input value="alex.anderson@company.com" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Email</label>
+                        <input value="alex.anderson@company.com" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Phone</label>
-                        <input value="+1 (555) 123-4567" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Phone</label>
+                        <input value="+1 (555) 123-4567" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                     </div>
                   </div>
 
                   {/* Work Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-md font-semibold text-gray-900">Work Information</h3>
-                    <div className="space-y-3">
+                  <div className="glass-effect rounded-2xl border-white/20 p-8 bg-white/60 backdrop-blur-xl">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 bg-green-200 rounded-xl shadow-sm">
+                        <Calendar className="w-6 h-6 text-green-600" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Work Information</h3>
+                    </div>
+                    <div className="space-y-6">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Department</label>
-                        <input value="Production" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Department</label>
+                        <input value="Production" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Position</label>
-                        <input value="Shift Operator" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Position</label>
+                        <input value="Shift Operator" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Group</label>
-                        <input value="Group A" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Group</label>
+                        <input value="Group A" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Hire Date</label>
-                        <input value="March 15, 2022" disabled className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" />
+                        <label className="text-sm font-bold text-gray-700 mb-2 block">Hire Date</label>
+                        <input value="March 15, 2022" disabled className="modern-input w-full h-12 px-4 py-3 text-base border-white/30 bg-white/50" />
                       </div>
                     </div>
                   </div>
@@ -732,19 +767,69 @@ export default function EmployeePage() {
 
                 {/* Qualifications */}
                 <div className="mt-8">
-                  <h3 className="text-md font-semibold text-gray-900 mb-4">Qualifications</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full border border-blue-300">Q1 - Early Shift</span>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full border border-green-300">Q2 - Late Shift</span>
-                    <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full border border-purple-300">Q3 - Night Shift</span>
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full border border-yellow-300">Quality Control</span>
-                    <span className="px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full border border-orange-300">Maintenance</span>
+                  <div className="glass-effect rounded-2xl border-white/20 p-8 bg-white/60 backdrop-blur-xl">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 bg-purple-200 rounded-xl shadow-sm">
+                        <Calendar className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Qualifications & Certifications</h3>
+                    </div>
+                    <div className="space-y-4">
+                      {/* Q1 - Basic */}
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-white/80 backdrop-blur-xl shadow-modern">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="status-info px-3 py-1 text-sm font-bold rounded-full shadow-sm">Q1</span>
+                              <span className="bg-blue-100 text-blue-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm border border-blue-300">Basic</span>
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-900">Basic Operations</h4>
+                          </div>
+                          <div className="flex items-center">
+                            <p className="text-sm text-gray-600 text-right">Fundamental equipment operation and safety procedures</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Q2 - Intermediate */}
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-white/80 backdrop-blur-xl shadow-modern">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="status-success px-3 py-1 text-sm font-bold rounded-full shadow-sm">Q2</span>
+                              <span className="bg-green-100 text-green-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm border border-green-300">Intermediate</span>
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-900">Advanced Operations</h4>
+                          </div>
+                          <div className="flex items-center">
+                            <p className="text-sm text-gray-600 text-right">Complex equipment operation and troubleshooting</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Q3 - Advanced */}
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-white/80 backdrop-blur-xl shadow-modern">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="bg-purple-100 text-purple-800 px-3 py-1 text-sm font-bold rounded-full shadow-sm border border-purple-300">Q3</span>
+                              <span className="bg-purple-100 text-purple-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm border border-purple-300">Advanced</span>
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-900">Expert Operations</h4>
+                          </div>
+                          <div className="flex items-center">
+                            <p className="text-sm text-gray-600 text-right">Master-level operations and training capabilities</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-8 flex justify-end">
                   <Button 
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 h-14 px-8"
+                    style={{borderRadius: '9999px'}}
                     onClick={() => alert("Profile editing feature coming soon!")}
                   >
                     Edit Profile
