@@ -438,6 +438,21 @@ export default function ShiftManagerPage() {
     alert(`Contact functionality for employee ${employeeId} would be implemented here`)
   }
 
+  const handleQualificationClick = (qualification: string) => {
+    // Navigate to qualifications page with filter
+    router.push(`/shift-manager/qualifications?filter=${qualification}`)
+  }
+
+  const handleRestPeriodClick = () => {
+    // Navigate to rest period compliance page
+    router.push('/shift-manager/rest-period-compliance')
+  }
+
+  const handleComplianceCardClick = () => {
+    // Navigate to rest period compliance page
+    router.push('/shift-manager/rest-period-compliance')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
@@ -463,25 +478,25 @@ export default function ShiftManagerPage() {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <div className="flex flex-wrap gap-3">
               <Link href="/shift-manager/shift-cycles">
-                <Button variant="outline" size="sm" className="border-purple-300 text-purple-700 hover:bg-purple-50 h-10 px-4">
+                <Button variant="outline" size="sm" className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Settings className="w-4 h-4 mr-2" />
                   Configure Cycles
                 </Button>
               </Link>
               <Link href="/shift-manager/employee-assignment">
-                <Button variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50 h-10 px-4">
+                <Button variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Users className="w-4 h-4 mr-2" />
                   Assign Employees
                 </Button>
               </Link>
               <Link href="/shift-manager/qualifications">
-                <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-50 h-10 px-4">
+                <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Award className="w-4 h-4 mr-2" />
                   Qualifications
                 </Button>
               </Link>
               <Link href="/shift-manager/vacation-management">
-                <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-50 h-10 px-4">
+                <Button variant="outline" size="sm" className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Calendar className="w-4 h-4 mr-2" />
                   Vacation Management
                 </Button>
@@ -489,15 +504,15 @@ export default function ShiftManagerPage() {
               
               {/* Quick Actions */}
               <div className="ml-auto flex gap-2">
-                <Button variant="outline" size="sm" onClick={exportToExcel} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                <Button variant="outline" size="sm" onClick={exportToExcel} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Download className="w-4 h-4 mr-2" />
                   Export
                 </Button>
-                <Button variant="outline" size="sm" onClick={sendNotifications} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                <Button variant="outline" size="sm" onClick={sendNotifications} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <Send className="w-4 h-4 mr-2" />
                   Notify
                 </Button>
-                <Button variant="outline" size="sm" onClick={refreshData} className="border-gray-300 text-gray-700 hover:bg-gray-50 h-10 px-4">
+                <Button variant="outline" size="sm" onClick={refreshData} className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Refresh
                 </Button>
@@ -513,20 +528,20 @@ export default function ShiftManagerPage() {
           <div className="flex border-b border-gray-200">
             <button 
               onClick={() => setViewMode("overview")}
-              className={`flex-1 px-6 py-4 text-left font-medium transition-colors ${
+              className={`flex-1 px-6 py-4 text-left font-medium transition-all duration-200 ease-out ${
                 viewMode === "overview" 
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm"
               }`}
             >
               Overview
             </button>
             <button 
               onClick={() => setViewMode("matrix")}
-              className={`flex-1 px-6 py-4 text-left font-medium transition-colors ${
+              className={`flex-1 px-6 py-4 text-left font-medium transition-all duration-200 ease-out ${
                 viewMode === "matrix" 
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm"
               }`}
             >
               Shift Matrix
@@ -547,7 +562,7 @@ export default function ShiftManagerPage() {
             {/* Overview Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div 
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-orange-500 cursor-pointer hover:scale-105 transform transition-all duration-200"
+                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-300 ease-out border-l-4 border-l-orange-500 cursor-pointer hover:-translate-y-1"
                 onClick={handleOpenShiftsClick}
               >
                 <div className="p-6">
@@ -567,7 +582,7 @@ export default function ShiftManagerPage() {
                 </div>
               </div>
               <div 
-                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border-l-4 border-l-blue-500 cursor-pointer hover:scale-105 transform transition-all duration-200"
+                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-300 ease-out border-l-4 border-l-blue-500 cursor-pointer hover:-translate-y-1"
                 onClick={handleActiveShiftsClick}
               >
                 <div className="p-6">
@@ -604,7 +619,10 @@ export default function ShiftManagerPage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-green-600">
+                <div 
+                  className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 hover:shadow-lg hover:border-green-300 transition-all duration-300 ease-out border-l-4 border-l-green-600 hover:-translate-y-0.5 cursor-pointer"
+                  onClick={() => handleQualificationClick('Q1')}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-green-200 rounded-lg">
@@ -628,7 +646,10 @@ export default function ShiftManagerPage() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-red-600">
+                <div 
+                  className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all duration-300 ease-out border-l-4 border-l-red-600 hover:-translate-y-0.5 cursor-pointer"
+                  onClick={() => handleQualificationClick('Q2')}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-red-200 rounded-lg">
@@ -653,7 +674,10 @@ export default function ShiftManagerPage() {
                 </div>
               </div>
               
-              <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div 
+                className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-100 hover:border-amber-300 transition-all duration-200 ease-out"
+                onClick={handleRestPeriodClick}
+              >
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-amber-600" />
                   <span className="font-medium text-amber-800">Rest Period Check:</span>
@@ -771,7 +795,7 @@ export default function ShiftManagerPage() {
               
               <div className="space-y-4">
                 {openRequests.map((request) => (
-                  <div key={request.id} className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                  <div key={request.id} className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-start gap-4">
                         <div className="p-3 bg-amber-200 rounded-lg">
@@ -846,7 +870,10 @@ export default function ShiftManagerPage() {
               </div>
               
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                <div 
+                  className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 hover:shadow-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer"
+                  onClick={handleComplianceCardClick}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-start gap-4">
                       <div className="p-3 bg-green-200 rounded-lg">
@@ -883,7 +910,10 @@ export default function ShiftManagerPage() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                <div 
+                  className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-6 hover:shadow-lg hover:border-red-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer"
+                  onClick={handleComplianceCardClick}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-start gap-4">
                       <div className="p-3 bg-red-200 rounded-lg">
@@ -959,7 +989,7 @@ export default function ShiftManagerPage() {
                     variant="outline" 
                     size="sm" 
                     onClick={() => navigateMonth('prev')}
-                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
@@ -974,7 +1004,7 @@ export default function ShiftManagerPage() {
                     variant="outline" 
                     size="sm" 
                     onClick={() => navigateMonth('next')}
-                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
                   >
                     Next
                     <ChevronRight className="w-4 h-4 ml-1" />
@@ -1037,7 +1067,7 @@ export default function ShiftManagerPage() {
                     {/* Fixed Employee Rows */}
                     <div className="bg-white">
                       {employeeData.map((employee, index) => (
-                        <div key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <div key={index} className="border-b border-slate-100 hover:bg-slate-50 hover:shadow-sm transition-all duration-200 ease-out">
                           <div className="flex text-sm py-4 px-6 h-14 items-center">
                             <div className="w-48 font-semibold text-slate-900">{employee.name}</div>
                             <div className="w-16 text-center text-slate-700 font-medium">{employee.shifts}</div>
@@ -1078,7 +1108,7 @@ export default function ShiftManagerPage() {
                       {/* Scrollable Employee Rows */}
                       <div className="bg-white">
                         {employeeData.map((employee, index) => (
-                          <div key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                          <div key={index} className="border-b border-slate-100 hover:bg-slate-50 hover:shadow-sm transition-all duration-200 ease-out">
                             <div className="flex text-sm py-4 px-6 h-14 items-center gap-1">
                               {generateShiftData(currentMonth, index).map((day, dayIndex) => (
                                 <div key={dayIndex} className={`w-10 h-10 text-center text-slate-900 font-semibold text-xs ${getShiftColor(day)} flex items-center justify-center rounded-md shadow-sm`}>

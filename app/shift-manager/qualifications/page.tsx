@@ -111,6 +111,83 @@ export default function QualificationsPage() {
       qualifications: ["Q2"],
       status: "active",
       hireDate: "2024-02-12"
+    },
+    {
+      id: "6",
+      name: "Employee AF",
+      employeeId: "EMP006",
+      email: "af@company.com",
+      currentLocation: "1",
+      currentGroup: "C",
+      qualifications: ["Q1", "Q3"],
+      status: "active",
+      hireDate: "2024-03-01"
+    },
+    {
+      id: "7",
+      name: "Employee AG",
+      employeeId: "EMP007",
+      email: "ag@company.com",
+      currentLocation: "2",
+      currentGroup: "A",
+      qualifications: ["Q2"],
+      status: "active",
+      hireDate: "2024-03-15"
+    },
+    {
+      id: "8",
+      name: "Employee AH",
+      employeeId: "EMP008",
+      email: "ah@company.com",
+      currentLocation: "1",
+      currentGroup: "D",
+      qualifications: ["Q1", "Q2"],
+      status: "active",
+      hireDate: "2024-04-01"
+    },
+    {
+      id: "9",
+      name: "Employee AI",
+      employeeId: "EMP009",
+      email: "ai@company.com",
+      currentLocation: "2",
+      currentGroup: "E",
+      qualifications: ["Q3"],
+      status: "active",
+      hireDate: "2024-04-10"
+    },
+    {
+      id: "10",
+      name: "Employee AJ",
+      employeeId: "EMP010",
+      email: "aj@company.com",
+      currentLocation: "1",
+      currentGroup: "D",
+      qualifications: ["Q1"],
+      status: "active",
+      hireDate: "2024-04-20"
+    },
+    {
+      id: "11",
+      name: "Employee AK",
+      employeeId: "EMP011",
+      email: "ak@company.com",
+      currentLocation: "2",
+      currentGroup: "E",
+      qualifications: ["Q2", "Q3"],
+      status: "active",
+      hireDate: "2024-05-01"
+    },
+    {
+      id: "12",
+      name: "Employee AL",
+      employeeId: "EMP012",
+      email: "al@company.com",
+      currentLocation: "1",
+      currentGroup: "B",
+      qualifications: ["Q1", "Q3"],
+      status: "active",
+      hireDate: "2024-05-15"
     }
   ])
 
@@ -142,6 +219,7 @@ export default function QualificationsPage() {
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([])
   const [selectedQualifications, setSelectedQualifications] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedGroup, setSelectedGroup] = useState<string>("all")
 
   const handleEmployeeSelection = (employeeId: string) => {
     setSelectedEmployees(prev => 
@@ -207,11 +285,29 @@ export default function QualificationsPage() {
     }))
   }
 
-  const filteredEmployees = employees.filter(emp => 
-    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    emp.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Get unique groups from employees
+  const availableGroups = Array.from(new Set(employees.map(emp => emp.currentGroup).filter(Boolean))).sort()
+  
+  const filteredEmployees = employees.filter(emp => {
+    const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesGroup = selectedGroup === "all" || emp.currentGroup === selectedGroup
+    
+    return matchesSearch && matchesGroup
+  })
+
+  // Get group statistics
+  const groupStats = availableGroups.reduce((acc, group) => {
+    const groupEmployees = employees.filter(emp => emp.currentGroup === group)
+    acc[group] = {
+      total: groupEmployees.length,
+      active: groupEmployees.filter(emp => emp.status === 'active').length,
+      withQualifications: groupEmployees.filter(emp => emp.qualifications.length > 0).length
+    }
+    return acc
+  }, {} as Record<string, { total: number; active: number; withQualifications: number }>)
 
   const getQualificationInfo = (code: string) => {
     return qualifications.find(q => q.code === code)
@@ -256,6 +352,67 @@ export default function QualificationsPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Group Filter */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Filter by Group</h3>
+              <p className="text-sm text-gray-600">Switch between different employee groups to view their qualifications</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setSelectedGroup("all")}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out ${
+                selectedGroup === "all"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+              }`}
+            >
+              All Groups ({employees.length})
+            </button>
+            {availableGroups.map((group) => (
+              <button
+                key={group}
+                onClick={() => setSelectedGroup(group)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ease-out ${
+                  selectedGroup === group
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+                }`}
+              >
+                Group {group} ({groupStats[group]?.total || 0})
+              </button>
+            ))}
+          </div>
+          
+          {/* Group Statistics */}
+          {selectedGroup !== "all" && groupStats[selectedGroup] && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{groupStats[selectedGroup].total}</div>
+                  <div className="text-blue-700">Total Employees</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{groupStats[selectedGroup].active}</div>
+                  <div className="text-green-700">Active</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">{groupStats[selectedGroup].withQualifications}</div>
+                  <div className="text-purple-700">With Qualifications</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Bulk Assignment */}
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -325,12 +482,27 @@ export default function QualificationsPage() {
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Employee Qualifications</h3>
-              <p className="text-gray-600">View and manage individual employee qualifications</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Employee Qualifications
+                {selectedGroup !== "all" && (
+                  <span className="text-lg font-normal text-blue-600 ml-2">
+                    - Group {selectedGroup}
+                  </span>
+                )}
+              </h3>
+              <p className="text-gray-600">
+                {selectedGroup === "all" 
+                  ? "View and manage individual employee qualifications across all groups"
+                  : `View and manage qualifications for employees in Group ${selectedGroup}`
+                }
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 {selectedEmployees.length} Selected
+              </Badge>
+              <Badge variant="outline" className="bg-gray-100 text-gray-700">
+                {filteredEmployees.length} Showing
               </Badge>
             </div>
           </div>
