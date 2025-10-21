@@ -206,31 +206,42 @@ export default function RestPeriodCompliancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-gradient-to-r from-white via-blue-50 to-indigo-50 border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      {/* Professional animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-40 left-1/2 w-60 h-60 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-6000"></div>
+      </div>
+      
+      <header className="glass-effect border-b border-white/30 shadow-modern-lg relative z-10">
+        <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <div className="flex items-center gap-4 mb-2">
+              <div className="flex items-center gap-3 mb-2">
                 <Button 
-                  variant="outline" 
+                  variant="ghost" 
                   size="sm" 
                   onClick={handleBack}
-                  className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out"
+                  className="btn-modern hover:bg-white/30 text-gray-700 hover:text-gray-900 mr-4"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
-                <h1 className="text-3xl font-bold text-gray-900">Rest Period Compliance</h1>
+                <h1 className="text-4xl font-bold text-gray-900">Rest Period Compliance</h1>
+                <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                  Manager Portal
+                </div>
               </div>
-              <p className="text-gray-600">Monitor and manage employee rest period compliance across all shifts</p>
+              <p className="text-gray-600 text-lg">Monitor and manage employee rest period compliance across all shifts</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-blue-600 font-medium">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="shadow-sm border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
@@ -239,231 +250,252 @@ export default function RestPeriodCompliancePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto section-padding relative z-10">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Records</p>
-                <p className="text-3xl font-bold text-gray-900">{complianceSummary.totalRecords}</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
+          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+            <div className="flex items-center justify-between mb-6">
+              <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
                 <Clock className="w-6 h-6 text-blue-600" />
               </div>
+              <div className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                Total
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-700 mb-2">{complianceSummary.totalRecords}</div>
+              <div className="text-lg font-semibold text-gray-700">Total Records</div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Compliant</p>
-                <p className="text-3xl font-bold text-green-600">{complianceSummary.compliant}</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
+          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8 bg-gradient-to-r from-green-50/50 to-emerald-50/50 hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+            <div className="flex items-center justify-between mb-6">
+              <div className="p-4 bg-green-200 rounded-xl shadow-sm">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
+              <div className="bg-green-100 text-green-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                Compliant
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-700 mb-2">{complianceSummary.compliant}</div>
+              <div className="text-lg font-semibold text-gray-700">Compliant Records</div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Non-Compliant</p>
-                <p className="text-3xl font-bold text-red-600">{complianceSummary.nonCompliant}</p>
-              </div>
-              <div className="p-3 bg-red-100 rounded-lg">
+          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8 bg-gradient-to-r from-red-50/50 to-rose-50/50 hover:shadow-modern-lg hover:border-red-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+            <div className="flex items-center justify-between mb-6">
+              <div className="p-4 bg-red-200 rounded-xl shadow-sm">
                 <XCircle className="w-6 h-6 text-red-600" />
               </div>
+              <div className="bg-red-100 text-red-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                Critical
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-red-700 mb-2">{complianceSummary.nonCompliant}</div>
+              <div className="text-lg font-semibold text-gray-700">Non-Compliant</div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Warnings</p>
-                <p className="text-3xl font-bold text-yellow-600">{complianceSummary.warnings}</p>
+          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 p-8 bg-gradient-to-r from-amber-50/50 to-yellow-50/50 hover:shadow-modern-lg hover:border-amber-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+            <div className="flex items-center justify-between mb-6">
+              <div className="p-4 bg-amber-200 rounded-xl shadow-sm">
+                <AlertTriangle className="w-6 h-6 text-amber-600" />
               </div>
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <AlertTriangle className="w-6 h-6 text-yellow-600" />
+              <div className="bg-amber-100 text-amber-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                Warning
               </div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-amber-700 mb-2">{complianceSummary.warnings}</div>
+              <div className="text-lg font-semibold text-gray-700">Warnings</div>
             </div>
           </div>
         </div>
 
         {/* Filters and Actions */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Filter & Search</h3>
-              <p className="text-gray-600">Search and filter compliance records by employee or status</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Filter className="w-5 h-5 text-blue-600" />
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Filter & Search</h3>
+                <p className="text-gray-600 text-lg">Search and filter compliance records by employee or status</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="p-3 bg-blue-100 rounded-xl shadow-sm">
+                  <Filter className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Search Employees
-                </label>
-                <Input
-                  placeholder="Search by employee ID or name..."
-                  value={filterEmployee}
-                  onChange={(e) => setFilterEmployee(e.target.value)}
-                  className="w-64 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                />
+            
+            <div className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+              <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-6 flex-1">
+                  <div className="space-y-3">
+                    <label className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                      <User className="w-5 h-5 text-blue-600" />
+                      Search Employees
+                    </label>
+                    <Input
+                      placeholder="Search by employee ID or name..."
+                      value={filterEmployee}
+                      onChange={(e) => setFilterEmployee(e.target.value)}
+                      className="modern-input h-14 px-4 py-3 text-base w-64"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                      <AlertTriangle className="w-5 h-5 text-blue-600" />
+                      Filter by Status
+                    </label>
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                      <SelectTrigger className="modern-input h-14 px-4 py-3 text-base w-48">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="compliant">Compliant</SelectItem>
+                        <SelectItem value="non-compliant">Non-Compliant</SelectItem>
+                        <SelectItem value="warning">Warning</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={exportComplianceReport}
+                    className="btn-modern border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 shadow-lg h-12 px-6"
+                    style={{borderRadius: '9999px'}}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={refreshComplianceData}
+                    className="btn-modern border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 shadow-lg h-12 px-6"
+                    style={{borderRadius: '9999px'}}
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Filter by Status
-                </label>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-48 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="compliant">Compliant</SelectItem>
-                    <SelectItem value="non-compliant">Non-Compliant</SelectItem>
-                    <SelectItem value="warning">Warning</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={exportComplianceReport}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={refreshComplianceData}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200 ease-out h-10 px-4"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
             </div>
           </div>
         </div>
 
         {/* Compliance Records */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Compliance Records</h3>
-              <p className="text-gray-600">View and manage individual compliance records</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Clock className="w-5 h-5 text-purple-600" />
+        <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Compliance Records</h3>
+                <p className="text-gray-600 text-lg">View and manage individual compliance records</p>
               </div>
-              <Badge variant="outline" className="bg-gray-100 text-gray-700">
-                {filteredRecords.length} Showing
-              </Badge>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            {filteredRecords.map((record) => (
-              <div 
-                key={record.id} 
-                className="bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 ease-out cursor-pointer"
-                onClick={() => handleRecordClick(record)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-lg ${record.status === 'compliant' ? 'bg-green-100' : record.status === 'non-compliant' ? 'bg-red-100' : 'bg-yellow-100'}`}>
-                      {record.status === 'compliant' ? (
-                        <CheckCircle className="w-6 h-6 text-green-600" />
-                      ) : record.status === 'non-compliant' ? (
-                        <XCircle className="w-6 h-6 text-red-600" />
-                      ) : (
-                        <AlertTriangle className="w-6 h-6 text-yellow-600" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{record.employeeName}</h3>
-                        <Badge className={getStatusColor(record.status)}>
-                          {record.status.charAt(0).toUpperCase() + record.status.slice(1).replace('-', ' ')}
-                        </Badge>
-                        {record.violationType && (
-                          <Badge variant="outline" className="text-red-700 border-red-300">
-                            {getViolationTypeText(record.violationType)}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                        <div>
-                          <span className="font-medium">Shift:</span> {record.shiftType} on {record.shiftDate}
-                        </div>
-                        <div>
-                          <span className="font-medium">Rest Period:</span> {record.restPeriodHours}h / {record.requiredHours}h required
-                        </div>
-                        <div>
-                          <span className="font-medium">Last Checked:</span> {record.lastChecked}
-                        </div>
-                      </div>
-                      {record.notes && (
-                        <div className="mt-2 text-sm text-amber-700 bg-amber-50 p-2 rounded border border-amber-200">
-                          <AlertCircle className="w-4 h-4 inline mr-1" />
-                          {record.notes}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
-                        {record.restPeriodHours >= record.requiredHours ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-red-600" />
-                        )}
-                        <span>{record.restPeriodHours}h</span>
-                      </div>
-                      <div className="text-xs text-gray-500">Rest Period</div>
-                    </div>
-                    {record.status === 'non-compliant' && (
-                      <Button 
-                        size="sm" 
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleResolveViolation(record.id)
-                        }}
-                      >
-                        Resolve
-                      </Button>
-                    )}
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-purple-100 rounded-xl shadow-sm">
+                  <Clock className="w-6 h-6 text-purple-600" />
                 </div>
+                <Badge variant="outline" className="bg-purple-100 text-purple-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                  {filteredRecords.length} Showing
+                </Badge>
               </div>
-            ))}
+            </div>
             
-            {filteredRecords.length === 0 && (
-              <div className="text-center py-12">
-                <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Clock className="w-8 h-8 text-gray-400" />
+            <div className="space-y-6">
+              {filteredRecords.map((record) => (
+                <div 
+                  key={record.id} 
+                  className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5 cursor-pointer"
+                  onClick={() => handleRecordClick(record)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-6">
+                      <div className={`p-4 rounded-xl shadow-sm ${record.status === 'compliant' ? 'bg-green-200' : record.status === 'non-compliant' ? 'bg-red-200' : 'bg-amber-200'}`}>
+                        {record.status === 'compliant' ? (
+                          <CheckCircle className="w-8 h-8 text-green-700" />
+                        ) : record.status === 'non-compliant' ? (
+                          <XCircle className="w-8 h-8 text-red-700" />
+                        ) : (
+                          <AlertTriangle className="w-8 h-8 text-amber-700" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-4">
+                          <h3 className="text-xl font-bold text-gray-900">{record.employeeName}</h3>
+                          <Badge className={getStatusColor(record.status)}>
+                            {record.status.charAt(0).toUpperCase() + record.status.slice(1).replace('-', ' ')}
+                          </Badge>
+                          {record.violationType && (
+                            <Badge variant="outline" className="text-red-700 border-red-300">
+                              {getViolationTypeText(record.violationType)}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-base text-gray-700 mb-4">
+                          <div>
+                            <span className="font-semibold text-gray-900">Shift:</span> {record.shiftType} on {record.shiftDate}
+                          </div>
+                          <div>
+                            <span className="font-semibold text-gray-900">Rest Period:</span> {record.restPeriodHours}h / {record.requiredHours}h required
+                          </div>
+                          <div>
+                            <span className="font-semibold text-gray-900">Last Checked:</span> {record.lastChecked}
+                          </div>
+                        </div>
+                        {record.notes && (
+                          <div className="mt-4 text-sm text-amber-700 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                            <AlertCircle className="w-4 h-4 inline mr-2" />
+                            {record.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 text-base font-semibold text-gray-900 mb-1">
+                          {record.restPeriodHours >= record.requiredHours ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600" />
+                          )}
+                          <span>{record.restPeriodHours}h</span>
+                        </div>
+                        <div className="text-sm text-gray-500">Rest Period</div>
+                      </div>
+                      {record.status === 'non-compliant' && (
+                        <Button 
+                          size="sm" 
+                          className="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                          style={{borderRadius: '9999px'}}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleResolveViolation(record.id)
+                          }}
+                        >
+                          Resolve
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">No compliance records found</h4>
-                <p className="text-gray-600">Try adjusting your filters or check back later for new records.</p>
-              </div>
-            )}
+              ))}
+              
+              {filteredRecords.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                    <Clock className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-3">No compliance records found</h4>
+                  <p className="text-gray-600 text-lg">Try adjusting your filters or check back later for new records.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

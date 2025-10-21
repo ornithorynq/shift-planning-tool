@@ -8,69 +8,167 @@ import {
   Clock, 
   LogOut,
   ChevronLeft,
-  Plus,
-  Trash2,
-  MapPin,
-  Building,
   UserCheck,
-  UserX
+  UserX,
+  AlertCircle,
+  CheckCircle,
+  MapPin,
+  Building
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
 
 type Employee = {
   id: string
   name: string
   employeeId: string
   email: string
-  currentLocation: string | null
-  currentGroup: string | null
   qualifications: string[]
   status: "active" | "inactive"
-  hireDate: string
-}
-
-type Location = {
-  id: string
-  name: string
-  address: string
-  capacity: number
-  currentEmployees: number
-}
-
-type EmployeeGroup = {
-  id: string
-  name: string
-  locationId: string
-  maxCapacity: number
-  currentCount: number
+  availability: "available" | "busy" | "off"
 }
 
 export default function EmployeeAssignmentPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  // Get shift information from URL parameters
-  const shiftId = searchParams.get('shiftId')
-  const shiftDate = searchParams.get('date')
-  const shiftType = searchParams.get('type')
-  const requiredQualification = searchParams.get('qualification')
+  // State for tab switching
+  const [activeTab, setActiveTab] = useState<"shifts" | "groups">("shifts")
   
-  // State for shift assignment
-  const [isShiftAssignment, setIsShiftAssignment] = useState(false)
+  // State for shift selection
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("")
+  const [shiftNeeds, setShiftNeeds] = useState<{
+    needsMore: boolean
+    required: number
+    assigned: number
+    qualification: string
+  } | null>(null)
   
-  useEffect(() => {
-    // Check if this is a shift assignment (has shift parameters)
-    if (shiftId && shiftDate && shiftType && requiredQualification) {
-      setIsShiftAssignment(true)
+  // Open bring shifts data
+  const [openBringShifts] = useState([
+    {
+      id: "1",
+      date: "2025-01-04",
+      shiftType: "Early Shift",
+      qualification: "Q1",
+      reason: "Vacation AA (Approved)",
+      status: "open"
+    },
+    {
+      id: "2", 
+      date: "2025-01-05",
+      shiftType: "Late Shift",
+      qualification: "Q2",
+      reason: "Sick Leave - COVID-19",
+      status: "open"
+    },
+    {
+      id: "3",
+      date: "2025-01-06", 
+      shiftType: "Night Shift",
+      qualification: "Q1",
+      reason: "Family Emergency",
+      status: "open"
+    },
+    {
+      id: "4",
+      date: "2025-01-07",
+      shiftType: "Early Shift", 
+      qualification: "Q3",
+      reason: "No-show (No prior notice)",
+      status: "open"
     }
-  }, [shiftId, shiftDate, shiftType, requiredQualification])
+  ])
   
+  // State for group/location assignment
+  const [selectedLocation, setSelectedLocation] = useState("")
+  const [selectedGroup, setSelectedGroup] = useState("")
+  const [locationNeeds, setLocationNeeds] = useState<{
+    needsMore: boolean
+    required: number
+    assigned: number
+    locationName: string
+    groupName: string
+  } | null>(null)
+
+  // Mock data for employees
+  const [employees] = useState<Employee[]>([
+    {
+      id: "1",
+      name: "John Smith",
+      employeeId: "EMP001",
+      email: "john@company.com",
+      qualifications: ["Q1", "Q2"],
+      status: "active",
+      availability: "available"
+    },
+    {
+      id: "2",
+      name: "Sarah Johnson",
+      employeeId: "EMP002",
+      email: "sarah@company.com",
+      qualifications: ["Q1"],
+      status: "active",
+      availability: "available"
+    },
+    {
+      id: "3",
+      name: "Mike Wilson",
+      employeeId: "EMP003",
+      email: "mike@company.com",
+      qualifications: ["Q2", "Q3"],
+      status: "active",
+      availability: "busy"
+    },
+    {
+      id: "4",
+      name: "Lisa Brown",
+      employeeId: "EMP004",
+      email: "lisa@company.com",
+      qualifications: ["Q1", "Q3"],
+      status: "active",
+      availability: "available"
+    }
+  ])
+
+  // Locations and groups data from the existing app
+  const [locations] = useState([
+    { id: "1", name: "Main Plant", address: "Production Line A & Quality Control", capacity: 30, currentEmployees: 22 },
+    { id: "2", name: "Secondary Facility", address: "Warehouse Operations", capacity: 20, currentEmployees: 12 }
+  ])
+
+  const [groups] = useState([
+    { id: "1", name: "Group A", locationId: "1", maxCapacity: 8, currentCount: 6 },
+    { id: "2", name: "Group B", locationId: "1", maxCapacity: 6, currentCount: 4 },
+    { id: "3", name: "Group C", locationId: "1", maxCapacity: 8, currentCount: 5 },
+    { id: "4", name: "Group D", locationId: "2", maxCapacity: 10, currentCount: 7 },
+    { id: "5", name: "Group E", locationId: "2", maxCapacity: 6, currentCount: 4 }
+  ])
+
+  // Handle URL parameters for open shift requests
+  useEffect(() => {
+    const shiftId = searchParams.get('shiftId')
+    const shiftType = searchParams.get('shiftType')
+    const shiftDate = searchParams.get('shiftDate')
+    const qualification = searchParams.get('qualification')
+    const reason = searchParams.get('reason')
+    
+    if (shiftId && shiftType && shiftDate && qualification) {
+      // Auto-populate the shift selection form
+      setSelectedDate(shiftDate)
+      setSelectedTimeSlot(shiftType.toLowerCase().replace(' ', ''))
+      
+      // Auto-check shift needs
+      setTimeout(() => {
+        checkShiftNeeds()
+      }, 100)
+    }
+  }, [searchParams])
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("userRole")
@@ -78,219 +176,108 @@ export default function EmployeeAssignmentPage() {
   }
 
   const goBack = () => {
-    router.push("/shift-manager")
+        router.push("/shift-manager")
+      }
+
+  const checkShiftNeeds = () => {
+    if (!selectedTimeSlot) return
+    
+    // Mock shift needs check
+    const mockNeeds = {
+      early: { needsMore: true, required: 4, assigned: 2, qualification: "Q1" },
+      earlyshift: { needsMore: true, required: 4, assigned: 2, qualification: "Q1" },
+      late: { needsMore: true, required: 4, assigned: 1, qualification: "Q2" },
+      lateshift: { needsMore: true, required: 4, assigned: 1, qualification: "Q2" },
+      night: { needsMore: true, required: 2, assigned: 0, qualification: "Q3" },
+      nightshift: { needsMore: true, required: 2, assigned: 0, qualification: "Q3" }
+    }
+    
+    setShiftNeeds(mockNeeds[selectedTimeSlot as keyof typeof mockNeeds])
   }
 
-  // Mock data for employees
-  const [employees, setEmployees] = useState<Employee[]>([
-    {
-      id: "1",
-      name: "Employee AA",
-      employeeId: "EMP001",
-      email: "aa@company.com",
-      currentLocation: "1",
-      currentGroup: "A",
-      qualifications: ["Q1", "Q2"],
-      status: "active",
-      hireDate: "2023-01-15"
-    },
-    {
-      id: "2",
-      name: "Employee AB",
-      employeeId: "EMP002",
-      email: "ab@company.com",
-      currentLocation: "1",
-      currentGroup: "B",
-      qualifications: ["Q1"],
-      status: "active",
-      hireDate: "2023-02-20"
-    },
-    {
-      id: "3",
-      name: "Employee AC",
-      employeeId: "EMP003",
-      email: "ac@company.com",
-      currentLocation: "2",
-      currentGroup: "A",
-      qualifications: ["Q2", "Q3"],
-      status: "active",
-      hireDate: "2023-03-10"
-    },
-    {
-      id: "4",
-      name: "Employee AD",
-      employeeId: "EMP004",
-      email: "ad@company.com",
-      currentLocation: null,
-      currentGroup: null,
-      qualifications: ["Q1"],
-      status: "active",
-      hireDate: "2024-01-05"
-    },
-    {
-      id: "5",
-      name: "Employee AE",
-      employeeId: "EMP005",
-      email: "ae@company.com",
-      currentLocation: "2",
-      currentGroup: "B",
-      qualifications: ["Q2"],
-      status: "active",
-      hireDate: "2024-02-12"
-    },
-    {
-      id: "6",
-      name: "Employee AF",
-      employeeId: "EMP006",
-      email: "af@company.com",
-      currentLocation: "1",
-      currentGroup: "A",
-      qualifications: ["Q1", "Q3"],
-      status: "active",
-      hireDate: "2024-03-15"
-    },
-    {
-      id: "7",
-      name: "Employee AG",
-      employeeId: "EMP007",
-      email: "ag@company.com",
-      currentLocation: null,
-      currentGroup: null,
-      qualifications: ["Q2"],
-      status: "active",
-      hireDate: "2024-04-01"
-    },
-    {
-      id: "8",
-      name: "Employee AH",
-      employeeId: "EMP008",
-      email: "ah@company.com",
-      currentLocation: "2",
-      currentGroup: "A",
-      qualifications: ["Q1", "Q2", "Q3"],
-      status: "active",
-      hireDate: "2024-05-10"
+  const handleAssignEmployee = (employeeId: string) => {
+    // Mock assignment logic
+    console.log(`Assigning employee ${employeeId} to shift`)
+    // Update shift needs to reflect the new assignment
+    if (shiftNeeds) {
+      setShiftNeeds({
+        ...shiftNeeds,
+        assigned: shiftNeeds.assigned + 1
+      })
     }
-  ])
+  }
 
-  // Mock data for locations
-  const [locations] = useState<Location[]>([
-    {
-      id: "1",
-      name: "Main Plant",
-      address: "123 Industrial Ave, Manufacturing District",
-      capacity: 50,
-      currentEmployees: 4
-    },
-    {
-      id: "2",
-      name: "Secondary Facility",
-      address: "456 Production Blvd, Industrial Zone",
-      capacity: 30,
-      currentEmployees: 4
+  const handleRemoveEmployee = (employeeId: string) => {
+    // Mock removal logic
+    console.log(`Removing employee ${employeeId} from shift`)
+  }
+
+  const checkLocationNeeds = () => {
+    if (!selectedLocation || !selectedGroup) return
+    
+    const location = locations.find(loc => loc.id === selectedLocation)
+    const group = groups.find(grp => grp.id === selectedGroup)
+    
+    if (!location || !group) return
+    
+    setLocationNeeds({
+      needsMore: group.currentCount < group.maxCapacity,
+      required: group.maxCapacity,
+      assigned: group.currentCount,
+      locationName: location.name,
+      groupName: group.name
+    })
+  }
+
+  const handleAssignToLocation = (employeeId: string) => {
+    // Mock assignment logic
+    console.log(`Assigning employee ${employeeId} to ${selectedLocation} - ${selectedGroup}`)
+    // Update location needs to reflect the new assignment
+    if (locationNeeds) {
+      setLocationNeeds({
+        ...locationNeeds,
+        assigned: locationNeeds.assigned + 1
+      })
     }
-  ])
+  }
 
-  // Mock data for employee groups
-  const [employeeGroups] = useState<EmployeeGroup[]>([
-    { id: "1", name: "Group A", locationId: "1", maxCapacity: 15, currentCount: 3 },
-    { id: "2", name: "Group B", locationId: "1", maxCapacity: 12, currentCount: 2 },
-    { id: "3", name: "Group C", locationId: "1", maxCapacity: 18, currentCount: 1 },
-    { id: "4", name: "Group D", locationId: "2", maxCapacity: 10, currentCount: 2 },
-    { id: "5", name: "Group E", locationId: "2", maxCapacity: 14, currentCount: 2 }
-  ])
+  const handleRemoveFromLocation = (employeeId: string) => {
+    // Mock removal logic
+    console.log(`Removing employee ${employeeId} from location/group`)
+  }
 
-  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([])
-  const [selectedLocation, setSelectedLocation] = useState("")
-  const [selectedGroup, setSelectedGroup] = useState("")
-  const [searchTerm, setSearchTerm] = useState("")
+  const handleQuickAssignFromOpenShift = (shiftId: string) => {
+    // Find the open shift and auto-populate the form
+    const openShift = openBringShifts.find(shift => shift.id === shiftId)
+    if (openShift) {
+      setSelectedDate(openShift.date)
+      setSelectedTimeSlot(openShift.shiftType.toLowerCase().replace(' shift', ''))
+      // Auto-trigger the shift check
+      setTimeout(() => {
+        checkShiftNeeds()
+      }, 100)
+    }
+  }
 
-  const handleEmployeeSelection = (employeeId: string) => {
-    setSelectedEmployees(prev => 
-      prev.includes(employeeId) 
-        ? prev.filter(id => id !== employeeId)
-        : [...prev, employeeId]
+  const getAvailableEmployees = () => {
+    if (!shiftNeeds) return []
+    
+    return employees.filter(emp => 
+      emp.qualifications.includes(shiftNeeds.qualification) && 
+      emp.availability === "available"
     )
   }
 
-  const handleAssignEmployees = () => {
-    if (isShiftAssignment) {
-      // Handle shift assignment
-      if (selectedEmployees.length > 0) {
-        // In a real app, this would call an API to assign employees to the shift
-        console.log(`Assigning employees ${selectedEmployees.join(', ')} to shift ${shiftId}`)
-        alert(`Successfully assigned ${selectedEmployees.length} employee(s) to ${shiftType} shift on ${shiftDate}`)
-        
-        setSelectedEmployees([])
-        
-        // Navigate back to shift manager
-        router.push("/shift-manager")
-      }
-    } else {
-      // Handle location/group assignment (original logic)
-      if (selectedEmployees.length > 0 && selectedLocation && selectedGroup) {
-        setEmployees(employees.map(emp => {
-          if (selectedEmployees.includes(emp.id)) {
-            return {
-              ...emp,
-              currentLocation: selectedLocation,
-              currentGroup: selectedGroup
-            }
-          }
-          return emp
-        }))
-        
-        setSelectedEmployees([])
-        setSelectedLocation("")
-        setSelectedGroup("")
-        
-        alert(`Successfully assigned ${selectedEmployees.length} employee(s) to ${selectedGroup}`)
-      }
-    }
+  const getAvailableEmployeesForLocation = () => {
+    if (!locationNeeds) return []
+    
+    return employees.filter(emp => 
+      emp.availability === "available"
+    )
   }
 
-  const handleRemoveAssignment = (employeeId: string) => {
-    setEmployees(employees.map(emp => 
-      emp.id === employeeId 
-        ? { ...emp, currentLocation: null, currentGroup: null }
-        : emp
-    ))
-  }
-
-  const filteredEmployees = employees.filter(emp => {
-    // Apply search filter
-    const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    // Apply location filter
-    const matchesLocation = !selectedLocation || selectedLocation === "all" || emp.currentLocation === selectedLocation
-    
-    // Apply group filter
-    const matchesGroup = !selectedGroup || selectedGroup === "all" || emp.currentGroup === selectedGroup
-    
-    // If it's a shift assignment, also filter by qualification
-    if (isShiftAssignment && requiredQualification) {
-      return matchesSearch && matchesLocation && matchesGroup && emp.qualifications.includes(requiredQualification)
-    }
-    
-    return matchesSearch && matchesLocation && matchesGroup
-  })
-
-  const getGroupCapacity = (groupId: string) => {
-    const group = employeeGroups.find(g => g.name === groupId)
-    return group ? group.maxCapacity : 0
-  }
-
-  const getGroupCurrentCount = (groupId: string) => {
-    const group = employeeGroups.find(g => g.name === groupId)
-    return group ? group.currentCount : 0
-  }
-
-  const getLocationName = (locationId: string | null) => {
-    if (!locationId) return "Unassigned"
-    const location = locations.find(l => l.id === locationId)
-    return location ? location.name : "Unknown"
+  const getGroupsForLocation = (locationId: string) => {
+    return groups.filter(group => group.locationId === locationId)
   }
 
   return (
@@ -306,35 +293,31 @@ export default function EmployeeAssignmentPage() {
       <header className="glass-effect border-b border-white/30 shadow-modern-lg relative z-10">
         <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={goBack} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
-                <ChevronLeft className="h-4 w-4 mr-2" />
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={goBack}
+                  className="btn-modern hover:bg-white/30 text-gray-700 hover:text-gray-900 mr-4"
+                >
+                  <ChevronLeft className="w-5 h-5 mr-2" />
                 Back to Dashboard
               </Button>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-4xl font-bold text-gray-900">
-                    {isShiftAssignment ? "Assign Employees to Shift" : "Employee Assignment"}
-                  </h1>
+                <h1 className="text-4xl font-bold text-gray-900">Employee Assignment</h1>
                   <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
                     Manager Portal
-                  </div>
                 </div>
-                <p className="text-gray-600 text-lg">
-                  {isShiftAssignment 
-                    ? `Assign employees to ${shiftType} shift on ${shiftDate} requiring ${requiredQualification} qualification`
-                    : "Assign employees to locations and groups"
-                  }
-                </p>
               </div>
+              <p className="text-gray-600 text-lg">Assign employees to specific shifts, locations and groups</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className="text-blue-600 font-bold text-lg">Shift Manager</div>
+                <div className="text-blue-600 font-medium">Shift Manager</div>
                 <div className="text-sm text-gray-500">ID: SM001 | Level: Manager</div>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout} className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg">
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
             </div>
@@ -342,114 +325,143 @@ export default function EmployeeAssignmentPage() {
         </div>
       </header>
 
-      <main className="relative z-10">
-        <div className="max-w-7xl mx-auto section-padding">
-          {/* Shift Information Card (only for shift assignments) */}
-          {isShiftAssignment && (
+      <main className="max-w-7xl mx-auto section-padding relative z-10">
+        <div className="space-y-8">
+          {/* Tab Switcher */}
             <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
-              <div className="card-padding">
-                <div className="flex items-center gap-6">
-                  <div className="p-4 bg-orange-200 rounded-xl shadow-sm">
-                    <Clock className="w-8 h-8 text-orange-700" />
+            <div className="flex border-b border-white/30 overflow-x-auto">
+              <button 
+                onClick={() => setActiveTab("shifts")}
+                className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative border-r border-gray-200/50 ${
+                  activeTab === "shifts" 
+                    ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
+                }`}
+              >
+                Shifts
+              </button>
+              <button 
+                onClick={() => setActiveTab("groups")}
+                className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative ${
+                  activeTab === "groups" 
+                    ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                    : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
+                }`}
+              >
+                Groups and Locations
+              </button>
+            </div>
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">{shiftType} Shift Assignment</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-base text-gray-700">
+
+          {/* Shifts Tab Content */}
+          {activeTab === "shifts" && (
+            <div className="space-y-8">
+              {/* Open Bring Shifts Section */}
+              {openBringShifts.length > 0 && (
+                <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-6">
                       <div>
-                        <span className="font-semibold text-gray-900">Date:</span> {shiftDate}
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Open Bring-Shifts Requiring Attention</h3>
+                        <p className="text-gray-600">Quickly assign employees to urgent shifts that need immediate coverage</p>
                       </div>
-                      <div>
-                        <span className="font-semibold text-gray-900">Shift Type:</span> {shiftType}
+                      <div className="flex items-center gap-2">
+                        <div className="p-3 bg-orange-100 rounded-xl shadow-sm">
+                          <AlertCircle className="w-6 h-6 text-orange-600" />
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-semibold text-gray-900">Required Qualification:</span> 
-                        <Badge variant="outline" className="bg-orange-100 text-orange-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
-                          {requiredQualification}
+                        <Badge variant="outline" className="bg-orange-100 text-orange-800 px-4 py-2 text-sm font-semibold rounded-full">
+                          {openBringShifts.length} Urgent
                         </Badge>
                       </div>
                     </div>
-                  </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {openBringShifts.map((shift) => (
+                        <div key={shift.id} className="glass-effect rounded-2xl border-white/30 p-6 bg-gradient-to-r from-orange-50/50 to-red-50/50 hover:shadow-modern-lg hover:border-orange-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-orange-200 rounded-lg shadow-sm">
+                                <Clock className="w-5 h-5 text-orange-700" />
+                              </div>
+                              <div>
+                                <h4 className="text-lg font-bold text-gray-900">{shift.shiftType}</h4>
+                                <p className="text-sm text-gray-600">{shift.date}</p>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="bg-orange-100 text-orange-800 px-3 py-1 text-sm font-semibold rounded-full">
+                              {shift.qualification}
+                            </Badge>
+                          </div>
+                          
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-700 mb-2">
+                              <span className="font-semibold">Reason:</span> {shift.reason}
+                            </p>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-800 text-sm font-semibold rounded-full">
+                              <AlertCircle className="w-4 h-4" />
+                              Requires immediate assignment
+                            </div>
+                          </div>
+                          
+                          <Button 
+                            onClick={() => handleQuickAssignFromOpenShift(shift.id)}
+                            className="btn-modern bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full"
+                            style={{borderRadius: '9999px'}}
+                          >
+                            <UserCheck className="w-4 h-4 mr-2" />
+                            Quick Assign Employee
+                          </Button>
+                        </div>
+                      ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Assignment Form */}
-          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
-            <div className="card-padding">
+              {/* Shift Selection Form */}
+              <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                <div className="p-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    {isShiftAssignment ? "Select Employees for Shift" : "Assign Employees"}
-                  </h3>
-                  <p className="text-gray-600 text-lg">
-                    {isShiftAssignment 
-                      ? "Select employees to assign to this shift"
-                      : "Select employees and assign them to locations and groups"
-                    }
-                  </p>
+                      <h2 className="text-3xl font-bold text-gray-900 mb-3">Assign Employees to Shifts</h2>
+                      <p className="text-gray-600 text-lg">Select employees and assign them to specific shifts</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="p-3 bg-blue-100 rounded-xl shadow-sm">
-                    <UserCheck className="w-6 h-6 text-blue-600" />
+                        <Calendar className="w-6 h-6 text-blue-600" />
                   </div>
                 </div>
               </div>
               
               <div className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
-                <div className={`grid gap-8 ${isShiftAssignment ? 'grid-cols-1 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-4'}`}>
+                    <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
                   <div className="space-y-3">
-                    <Label htmlFor="search" className="text-base font-semibold text-gray-800 flex items-center gap-3">
-                      <Users className="w-5 h-5 text-blue-600" />
-                      Search Employees
+                        <Label htmlFor="shift-date" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                          <Calendar className="w-5 h-5 text-blue-600" />
+                          Date
                     </Label>
                     <Input
-                      id="search"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search by name, ID, or email..."
+                          id="shift-date"
+                          type="date"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
                       className="modern-input h-14 px-4 py-3 text-base"
                     />
                   </div>
                   
                   <div className="space-y-3">
-                    <Label htmlFor="location" className="text-base font-semibold text-gray-800 flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-blue-600" />
-                      Location
+                        <Label htmlFor="shift-time" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                          <Clock className="w-5 h-5 text-blue-600" />
+                          Time Slot
                     </Label>
-                    <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                        <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
                       <SelectTrigger className="modern-input h-14 px-4 py-3 text-base">
-                        <SelectValue placeholder="All locations" />
+                            <SelectValue placeholder="Select time slot" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All locations</SelectItem>
-                        {locations.map((location) => (
-                          <SelectItem key={location.id} value={location.id}>
-                            {location.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="group" className="text-base font-semibold text-gray-800 flex items-center gap-3">
-                      <Users className="w-5 h-5 text-blue-600" />
-                      Employee Group
-                    </Label>
-                    <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                      <SelectTrigger className="modern-input h-14 px-4 py-3 text-base">
-                        <SelectValue placeholder="All groups" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All groups</SelectItem>
-                        {employeeGroups
-                          .filter(group => selectedLocation === "all" || !selectedLocation || group.locationId === selectedLocation)
-                          .map((group) => (
-                            <SelectItem key={group.id} value={group.name}>
-                              {group.name}
-                            </SelectItem>
-                          ))}
+                            <SelectItem value="early">Early Shift (6:00-14:00)</SelectItem>
+                            <SelectItem value="late">Late Shift (14:00-22:00)</SelectItem>
+                            <SelectItem value="night">Night Shift (22:00-6:00)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -457,13 +469,13 @@ export default function EmployeeAssignmentPage() {
                   <div className="flex flex-col justify-end h-full">
                     <div className="h-6"></div>
                     <Button 
-                      onClick={handleAssignEmployees}
-                      className="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full h-14"
+                          onClick={checkShiftNeeds}
+                          disabled={!selectedTimeSlot}
+                          className="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full h-14 disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{borderRadius: '9999px'}}
-                      disabled={selectedEmployees.length === 0}
                     >
-                      <UserCheck className="w-5 h-5 mr-2" />
-                      {isShiftAssignment ? 'Assign to Shift' : 'Assign'} ({selectedEmployees.length})
+                          <Users className="w-5 h-5 mr-2" />
+                          Check Shift Status
                     </Button>
                   </div>
                 </div>
@@ -471,118 +483,154 @@ export default function EmployeeAssignmentPage() {
             </div>
           </div>
 
-          {/* Employee List */}
-          <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
-            <div className="card-padding">
-              <div className="flex items-center justify-between mb-8">
+              {/* Shift Status Display */}
+              {shiftNeeds && (
+                <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    {isShiftAssignment ? "Available Employees for Shift" : "Employee List"}
-                  </h3>
-                  <p className="text-gray-600 text-lg">
-                    {isShiftAssignment 
-                      ? `Showing employees with ${requiredQualification} qualification who can work this shift`
-                      : "Select employees to assign to locations and groups"
-                    }
-                  </p>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Shift Status</h3>
+                        <p className="text-gray-600">Current staffing for {selectedTimeSlot} shift on {selectedDate}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {shiftNeeds.needsMore ? (
+                          <AlertCircle className="w-6 h-6 text-orange-600" />
+                        ) : (
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-blue-700 mb-2">{shiftNeeds.assigned}</div>
+                          <div className="text-sm font-semibold text-gray-700">Currently Assigned</div>
+                        </div>
+                      </div>
+                      
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-green-50/50 to-emerald-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-700 mb-2">{shiftNeeds.required}</div>
+                          <div className="text-sm font-semibold text-gray-700">Required</div>
+                        </div>
+                      </div>
+                      
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-orange-50/50 to-amber-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-orange-700 mb-2">{shiftNeeds.required - shiftNeeds.assigned}</div>
+                          <div className="text-sm font-semibold text-gray-700">Still Needed</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-semibold rounded-full">
+                        Requires {shiftNeeds.qualification} Qualification
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Available Employees Section */}
+              {shiftNeeds && (
+                <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-8">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">Available Employees</h3>
+                        <p className="text-gray-600 text-lg">Select employees to assign to this shift</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
-                    {selectedEmployees.length} Selected
+                          {shiftNeeds.qualification} Qualified
                   </Badge>
                   <Badge variant="secondary" className="bg-green-100 text-green-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
-                    {filteredEmployees.length} Available
+                          {getAvailableEmployees().length} Available
                   </Badge>
                 </div>
               </div>
               
-              <div className="space-y-6">
-                {filteredEmployees.map((employee) => (
-                  <div key={employee.id} className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                    <div className="space-y-4">
+                      {getAvailableEmployees().map((employee) => (
+                        <div key={employee.id} className="glass-effect rounded-2xl border-white/30 p-6 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-blue-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-start gap-6">
-                        <div className="flex items-center">
-                          <Checkbox
-                            checked={selectedEmployees.includes(employee.id)}
-                            onCheckedChange={() => handleEmployeeSelection(employee.id)}
-                            className="w-6 h-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2"
-                          />
-                        </div>
-                        <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
-                          <Users className="w-8 h-8 text-blue-700" />
+                            <div className="flex items-start gap-4">
+                              <div className="p-3 bg-blue-200 rounded-xl shadow-sm">
+                                <Users className="w-6 h-6 text-blue-700" />
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-4 mb-4">
-                            <h4 className="text-xl font-bold text-gray-900">{employee.name}</h4>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="bg-gray-100 text-gray-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
+                                <div className="flex items-center gap-4 mb-3">
+                                  <h4 className="text-lg font-bold text-gray-900">{employee.name}</h4>
+                                  <Badge variant="outline" className="bg-gray-100 text-gray-800 px-3 py-1 text-sm font-semibold rounded-full">
                                 {employee.employeeId}
                               </Badge>
-                              <Badge variant="outline" className="bg-green-100 text-green-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
-                                {employee.status}
-                              </Badge>
-                              {employee.currentLocation && (
-                                <Badge variant="outline" className="bg-blue-100 text-blue-800 px-3 py-1 text-sm font-semibold rounded-full shadow-sm">
-                                  {employee.currentGroup}
+                                  <Badge variant="outline" className="bg-green-100 text-green-800 px-3 py-1 text-sm font-semibold rounded-full">
+                                    Available
                                 </Badge>
-                              )}
                             </div>
+                                <div className="text-sm text-gray-700 mb-2">
+                                  <span className="font-semibold">Email:</span> {employee.email}
                           </div>
-                          <div className="text-base text-gray-700 mb-3">
-                            <span className="font-semibold text-gray-900">Email:</span> {employee.email}
+                                <div className="text-sm text-gray-700">
+                                  <span className="font-semibold">Qualifications:</span> {employee.qualifications.join(", ")}
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-base text-gray-700">
-                            <div>
-                              <span className="font-semibold text-gray-900">Location:</span> {getLocationName(employee.currentLocation)}
                             </div>
-                            <div>
-                              <span className="font-semibold text-gray-900">Group:</span> {employee.currentGroup || "Unassigned"}
                             </div>
-                            <div>
-                              <span className="font-semibold text-gray-900">Qualifications:</span> {employee.qualifications.join(", ")}
-                            </div>
-                            <div>
-                              <span className="font-semibold text-gray-900">Hire Date:</span> {employee.hireDate}
+                            
+                            <div className="flex gap-3">
+                              <Button 
+                                size="sm"
+                                onClick={() => handleAssignEmployee(employee.id)}
+                                className="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                                style={{borderRadius: '9999px'}}
+                              >
+                                <UserCheck className="w-4 h-4 mr-2" />
+                                Assign to Shift
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleRemoveEmployee(employee.id)}
+                                className="btn-modern border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 shadow-lg"
+                                style={{borderRadius: '9999px'}}
+                              >
+                                <UserX className="w-4 h-4 mr-2" />
+                                Remove
+                              </Button>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      ))}
                       
-                      {employee.currentLocation && (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleRemoveAssignment(employee.id)}
-                          className="btn-modern border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 shadow-lg"
-                        >
-                          <UserX className="w-4 h-4 mr-2" />
-                          Remove Assignment
-                        </Button>
+                      {getAvailableEmployees().length === 0 && (
+                        <div className="text-center py-12">
+                          <div className="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                            <Users className="w-12 h-12 text-gray-400" />
+                          </div>
+                          <h4 className="text-xl font-semibold text-gray-900 mb-3">No Available Employees</h4>
+                          <p className="text-gray-600">No employees with the required qualification are currently available.</p>
+                        </div>
                       )}
                     </div>
                   </div>
-                ))}
-                
-                {filteredEmployees.length === 0 && (
-                  <div className="text-center py-16">
-                    <div className="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-                      <Users className="w-12 h-12 text-gray-400" />
-                    </div>
-                    <h4 className="text-xl font-semibold text-gray-900 mb-3">No employees found</h4>
-                    <p className="text-gray-600 text-lg">Try adjusting your search criteria.</p>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
 
-          {/* Location Overview */}
+            </div>
+          )}
+
+          {/* Groups Tab Content */}
+          {activeTab === "groups" && (
+            <div className="space-y-8">
+              {/* Location and Group Selection Form */}
           <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
-            <div className="card-padding">
+                <div className="p-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Location Overview</h3>
-                  <p className="text-gray-600 text-lg">Current employee distribution across locations and groups</p>
+                      <h2 className="text-3xl font-bold text-gray-900 mb-3">Assign Employees to Groups and Locations</h2>
+                      <p className="text-gray-600 text-lg">Select employees and assign them to specific locations and groups</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="p-3 bg-green-100 rounded-xl shadow-sm">
@@ -591,55 +639,199 @@ export default function EmployeeAssignmentPage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-green-50/50 to-emerald-50/50">
+                    <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+                      <div className="space-y-3">
+                        <Label htmlFor="location-select" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                          <MapPin className="w-5 h-5 text-green-600" />
+                          Location
+                        </Label>
+                        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                          <SelectTrigger className="modern-input h-14 px-4 py-3 text-base">
+                            <SelectValue placeholder="Select location" />
+                          </SelectTrigger>
+                          <SelectContent>
                 {locations.map((location) => (
-                  <div key={location.id} className="glass-effect rounded-2xl border-white/30 p-8 bg-gradient-to-r from-green-50/50 to-emerald-50/50 hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
+                              <SelectItem key={location.id} value={location.id}>
+                                {location.name} - {location.address}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <Label htmlFor="group-select" className="text-base font-semibold text-gray-800 flex items-center gap-3">
+                          <Users className="w-5 h-5 text-green-600" />
+                          Group
+                        </Label>
+                        <Select value={selectedGroup} onValueChange={setSelectedGroup} disabled={!selectedLocation}>
+                          <SelectTrigger className="modern-input h-14 px-4 py-3 text-base">
+                            <SelectValue placeholder="Select group" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getGroupsForLocation(selectedLocation).map((group) => (
+                              <SelectItem key={group.id} value={group.id}>
+                                {group.name} ({group.currentCount}/{group.maxCapacity})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="flex flex-col justify-end h-full">
+                        <div className="h-6"></div>
+                        <Button 
+                          onClick={checkLocationNeeds}
+                          disabled={!selectedLocation || !selectedGroup}
+                          className="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 w-full h-14 disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{borderRadius: '9999px'}}
+                        >
+                          <Building className="w-5 h-5 mr-2" />
+                          Check Group Status
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Status Display */}
+              {locationNeeds && (
+                <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                  <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <h4 className="text-xl font-bold text-gray-900 mb-2">{location.name}</h4>
-                        <p className="text-base text-gray-600">{location.address}</p>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Group Status</h3>
+                        <p className="text-gray-600">Current staffing for {locationNeeds.groupName} at {locationNeeds.locationName}</p>
                       </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-green-700">{location.currentEmployees}</div>
-                        <div className="text-base text-green-600 font-semibold">/{location.capacity} capacity</div>
+                      <div className="flex items-center gap-2">
+                        {locationNeeds.needsMore ? (
+                          <AlertCircle className="w-6 h-6 text-orange-600" />
+                        ) : (
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-green-50/50 to-emerald-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-700 mb-2">{locationNeeds.assigned}</div>
+                          <div className="text-sm font-semibold text-gray-700">Currently Assigned</div>
+                        </div>
+                      </div>
+                      
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-blue-700 mb-2">{locationNeeds.required}</div>
+                          <div className="text-sm font-semibold text-gray-700">Max Capacity</div>
+                        </div>
+                      </div>
+                      
+                      <div className="glass-effect rounded-xl border-white/30 p-6 bg-gradient-to-r from-orange-50/50 to-amber-50/50">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-orange-700 mb-2">{locationNeeds.required - locationNeeds.assigned}</div>
+                          <div className="text-sm font-semibold text-gray-700">Available Spots</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <Badge variant="outline" className="bg-green-100 text-green-800 px-4 py-2 text-sm font-semibold rounded-full">
+                        {locationNeeds.locationName} - {locationNeeds.groupName}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Available Employees Section */}
+              {locationNeeds && (
+                <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30">
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-8">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">Available Employees</h3>
+                        <p className="text-gray-600 text-lg">Select employees to assign to this group and location</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                          {locationNeeds.groupName}
+                        </Badge>
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
+                          {getAvailableEmployeesForLocation().length} Available
+                        </Badge>
                       </div>
                     </div>
                     
                     <div className="space-y-4">
-                      {employeeGroups
-                        .filter(group => group.locationId === location.id)
-                        .map((group) => (
-                          <div key={group.id} className="glass-effect rounded-xl border-white/30 p-6 bg-white/50 hover:bg-white/70 transition-all duration-200">
+                      {getAvailableEmployeesForLocation().map((employee) => (
+                        <div key={employee.id} className="glass-effect rounded-2xl border-white/30 p-6 bg-gradient-to-r from-slate-50/50 to-gray-50/50 hover:shadow-modern-lg hover:border-green-300 transition-all duration-300 ease-out hover:-translate-y-0.5">
                             <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="font-semibold text-gray-900 text-lg mb-2">{group.name}</div>
-                                <div className="text-base text-gray-600">{group.currentCount} / {group.maxCapacity} employees</div>
+                            <div className="flex items-start gap-4">
+                              <div className="p-3 bg-green-200 rounded-xl shadow-sm">
+                                <Users className="w-6 h-6 text-green-700" />
                               </div>
-                              <div className="flex items-center gap-4">
-                                <div className="w-24 bg-gray-200 rounded-full h-3 shadow-inner">
-                                  <div 
-                                    className={`h-3 rounded-full transition-all duration-500 ${group.currentCount >= group.maxCapacity ? 'bg-red-500' : 'bg-green-500'}`}
-                                    style={{ width: `${(group.currentCount / group.maxCapacity) * 100}%` }}
-                                  ></div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-4 mb-3">
+                                  <h4 className="text-lg font-bold text-gray-900">{employee.name}</h4>
+                                  <Badge variant="outline" className="bg-gray-100 text-gray-800 px-3 py-1 text-sm font-semibold rounded-full">
+                                    {employee.employeeId}
+                                  </Badge>
+                                  <Badge variant="outline" className="bg-green-100 text-green-800 px-3 py-1 text-sm font-semibold rounded-full">
+                                    Available
+                                  </Badge>
+                              </div>
+                                <div className="text-sm text-gray-700 mb-2">
+                                  <span className="font-semibold">Email:</span> {employee.email}
                                 </div>
-                                <div className="text-right">
-                                  <div className="text-sm font-semibold text-gray-700">
-                                    {Math.round((group.currentCount / group.maxCapacity) * 100)}%
-                                  </div>
-                                  <div className={`text-xs font-medium ${group.currentCount >= group.maxCapacity ? 'text-red-600' : 'text-green-600'}`}>
-                                    {group.currentCount >= group.maxCapacity ? 'Full' : 'Available'}
-                                  </div>
+                                <div className="text-sm text-gray-700">
+                                  <span className="font-semibold">Qualifications:</span> {employee.qualifications.join(", ")}
                                 </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-3">
+                              <Button 
+                                size="sm"
+                                onClick={() => handleAssignToLocation(employee.id)}
+                                className="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                                style={{borderRadius: '9999px'}}
+                              >
+                                <UserCheck className="w-4 h-4 mr-2" />
+                                Assign to Group
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleRemoveFromLocation(employee.id)}
+                                className="btn-modern border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 shadow-lg"
+                                style={{borderRadius: '9999px'}}
+                              >
+                                <UserX className="w-4 h-4 mr-2" />
+                                Remove
+                              </Button>
                               </div>
                             </div>
                           </div>
                         ))}
+                      
+                      {getAvailableEmployeesForLocation().length === 0 && (
+                        <div className="text-center py-12">
+                          <div className="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                            <Users className="w-12 h-12 text-gray-400" />
+                          </div>
+                          <h4 className="text-xl font-semibold text-gray-900 mb-3">No Available Employees</h4>
+                          <p className="text-gray-600">No employees are currently available for assignment.</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
               </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>

@@ -398,45 +398,27 @@ export default function VacationManagementPage() {
 
         {/* Navigation Tabs */}
         <div className="glass-effect rounded-2xl shadow-modern-lg border-white/30 mb-8">
-          <div className="px-8 py-6">
-            <div className="flex border-b border-gray-200">
-              <button 
-                onClick={() => setActiveTab("requests")}
-                className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
-                  activeTab === "requests" 
-                    ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${activeTab === "requests" ? "bg-blue-100" : "bg-gray-100"}`}>
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">Requests</div>
-                    <div className="text-sm opacity-75">Review and approve time-off requests</div>
-                  </div>
-                </div>
-              </button>
-              <button 
-                onClick={() => setActiveTab("calendar")}
-                className={`flex-1 px-8 py-6 text-left font-medium transition-colors ${
-                  activeTab === "calendar" 
-                    ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600" 
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${activeTab === "calendar" ? "bg-blue-100" : "bg-gray-100"}`}>
-                    <CalendarDays className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">Calendar</div>
-                    <div className="text-sm opacity-75">View upcoming vacations</div>
-                  </div>
-                </div>
-              </button>
-            </div>
+          <div className="flex border-b border-white/30 overflow-x-auto">
+            <button 
+              onClick={() => setActiveTab("requests")}
+              className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative border-r border-gray-200/50 ${
+                activeTab === "requests" 
+                  ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
+              }`}
+            >
+              Requests
+            </button>
+            <button 
+              onClick={() => setActiveTab("calendar")}
+              className={`flex-1 px-3 sm:px-6 py-4 text-center font-medium transition-colors whitespace-nowrap relative ${
+                activeTab === "calendar" 
+                  ? "text-blue-600 bg-blue-100/50 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:transform after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-blue-600" 
+                  : "text-gray-600 hover:text-gray-900 hover:bg-white/30"
+              }`}
+            >
+              Calendar
+            </button>
           </div>
         </div>
 
@@ -455,7 +437,7 @@ export default function VacationManagementPage() {
                     <div className="p-4 bg-blue-200 rounded-xl shadow-sm">
                       <FileText className="w-6 h-6 text-blue-600" />
                     </div>
-                    <div className="status-info px-4 py-2 text-sm font-bold rounded-full shadow-sm">
+                    <div className="status-info px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
                       {filteredRequests.length} Requests
                     </div>
                   </div>

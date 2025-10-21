@@ -9,9 +9,18 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export default function HRPage() {
+  const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"overview" | "reports">("overview")
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 0)) // January 2025
   
+  // Simulate loading
+  useState(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+    return () => clearTimeout(timer)
+  })
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("userRole")
@@ -214,6 +223,17 @@ export default function HRPage() {
     console.log("Exporting data to Excel:", data)
     // In a real app, this would trigger a download
     alert("Excel export functionality would be implemented here")
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading HR dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

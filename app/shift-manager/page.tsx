@@ -76,6 +76,7 @@ type QualificationCoverage = {
 
 export default function ShiftManagerPage() {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"overview" | "matrix" | "create-shift">("overview")
   const [newShiftDate, setNewShiftDate] = useState("")
   const [newShiftType, setNewShiftType] = useState("")
@@ -87,12 +88,29 @@ export default function ShiftManagerPage() {
   const [showEmptyState, setShowEmptyState] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isActionLoading, setIsActionLoading] = useState(false)
+
+  // Simulate loading
+  useState(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+    return () => clearTimeout(timer)
+  })
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("userRole")
     router.push("/")
+  }
+
+  const handleOpenShiftClick = (requestId: string) => {
+    // Find the request details
+    const request = openRequests.find(req => req.id === requestId)
+    if (request) {
+      // Navigate to employee assignment page with shift details
+      router.push(`/shift-manager/employee-assignment?shiftId=${requestId}&shiftType=${encodeURIComponent(request.shiftType)}&shiftDate=${encodeURIComponent(request.shiftDate)}&qualification=${encodeURIComponent(request.requiredQualification)}&reason=${encodeURIComponent(request.reason)}`)
+    }
   }
 
   const [bringShifts, setBringShifts] = useState<BringShift[]>([
@@ -257,7 +275,7 @@ export default function ShiftManagerPage() {
   }
 
   const exportToExcel = () => {
-    setIsLoading(true)
+    setIsActionLoading(true)
     // Simulate Excel export with realistic delay
     setTimeout(() => {
       const data = {
@@ -267,7 +285,7 @@ export default function ShiftManagerPage() {
         coverage: qualificationCoverage
       }
       console.log("Exporting data to Excel:", data)
-      setIsLoading(false)
+      setIsActionLoading(false)
       setSuccessMessage("Excel report exported successfully! Check your downloads folder.")
       setShowSuccessMessage(true)
       setTimeout(() => setShowSuccessMessage(false), 3000)
@@ -275,11 +293,11 @@ export default function ShiftManagerPage() {
   }
 
   const sendNotifications = () => {
-    setIsLoading(true)
+    setIsActionLoading(true)
     // Simulate sending notifications with realistic delay
     setTimeout(() => {
       console.log("Sending notifications to employees")
-      setIsLoading(false)
+      setIsActionLoading(false)
       setSuccessMessage("Notifications sent to 12 employees successfully!")
       setShowSuccessMessage(true)
       setTimeout(() => setShowSuccessMessage(false), 3000)
@@ -287,11 +305,11 @@ export default function ShiftManagerPage() {
   }
 
   const refreshData = () => {
-    setIsLoading(true)
+    setIsActionLoading(true)
     // Simulate data refresh with realistic delay
     setTimeout(() => {
       console.log("Refreshing shift data")
-      setIsLoading(false)
+      setIsActionLoading(false)
       setSuccessMessage("Data refreshed successfully! 3 new updates found.")
       setShowSuccessMessage(true)
       setTimeout(() => setShowSuccessMessage(false), 3000)
@@ -528,6 +546,17 @@ export default function ShiftManagerPage() {
     router.push('/shift-manager/rest-period-compliance')
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading manager dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Professional animated background elements */}
@@ -573,7 +602,7 @@ export default function ShiftManagerPage() {
               <Link href="/shift-manager/employee-assignment">
                 <Button variant="outline" size="sm" className="btn-modern border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400 shadow-lg h-10 px-4" style={{borderRadius: '9999px'}}>
                   <Users className="w-4 h-4 mr-2" />
-                  Assign Employees
+                  Employee Assignment
                 </Button>
               </Link>
               <Link href="/shift-manager/qualifications">
@@ -595,11 +624,11 @@ export default function ShiftManagerPage() {
                   variant="outline" 
                   size="sm" 
                   onClick={exportToExcel} 
-                  disabled={isLoading}
+                  disabled={isActionLoading}
                   className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
                   style={{borderRadius: '9999px'}}
                 >
-                  {isLoading ? (
+                  {isActionLoading ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
@@ -610,11 +639,11 @@ export default function ShiftManagerPage() {
                   variant="outline" 
                   size="sm" 
                   onClick={sendNotifications} 
-                  disabled={isLoading}
+                  disabled={isActionLoading}
                   className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
                   style={{borderRadius: '9999px'}}
                 >
-                  {isLoading ? (
+                  {isActionLoading ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
                   ) : (
                     <Send className="w-4 h-4 mr-2" />
@@ -625,11 +654,11 @@ export default function ShiftManagerPage() {
                   variant="outline" 
                   size="sm" 
                   onClick={refreshData} 
-                  disabled={isLoading}
+                  disabled={isActionLoading}
                   className="btn-modern border-white/30 text-gray-700 hover:bg-white/20 hover:border-white/40 shadow-lg h-10 px-4 disabled:opacity-50"
                   style={{borderRadius: '9999px'}}
                 >
-                  {isLoading ? (
+                  {isActionLoading ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
                   ) : (
                     <RefreshCw className="w-4 h-4 mr-2" />
@@ -653,7 +682,7 @@ export default function ShiftManagerPage() {
       )}
 
       {/* Loading Overlay */}
-      {isLoading && (
+      {isActionLoading && (
         <div className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 flex items-center gap-3 shadow-2xl border border-white/20">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
@@ -926,7 +955,11 @@ export default function ShiftManagerPage() {
                             <Eye className="w-4 h-4 mr-1" />
                             View
                           </Button>
-                          <Button size="sm" className="btn-modern bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg">
+                          <Button 
+                            size="sm" 
+                            className="btn-modern bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg"
+                            onClick={() => handleOpenShiftClick(request.id)}
+                          >
                             Assign
                           </Button>
                         </div>
