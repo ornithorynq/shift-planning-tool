@@ -294,7 +294,7 @@ export default function EmployeePage() {
                           onClick={() => setShowConfirmModal(true)}
                         >
                           <CheckCircle className="h-4 w-4 mr-2" />
-                          Confirm Systematic
+                          Confirm Assignment
                         </Button>
                         <Button 
                           size="sm" 
